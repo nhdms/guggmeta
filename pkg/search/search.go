@@ -3,8 +3,8 @@ package search
 import (
 	"errors"
 
-	"github.com/olivere/elastic"
-	log "gopkg.in/inconshreveable/log15.v2"
+	"github.com/sevein/guggmeta/Godeps/_workspace/src/github.com/olivere/elastic"
+	log "github.com/sevein/guggmeta/Godeps/_workspace/src/gopkg.in/inconshreveable/log15.v2"
 )
 
 const (

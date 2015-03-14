@@ -9,9 +9,9 @@ import (
 
 	"github.com/sevein/guggmeta/pkg/search"
 
-	"github.com/zenazn/goji/graceful"
-	"github.com/zenazn/goji/web"
-	log "gopkg.in/inconshreveable/log15.v2"
+	"github.com/sevein/guggmeta/Godeps/_workspace/src/github.com/zenazn/goji/graceful"
+	"github.com/sevein/guggmeta/Godeps/_workspace/src/github.com/zenazn/goji/web"
+	log "github.com/sevein/guggmeta/Godeps/_workspace/src/gopkg.in/inconshreveable/log15.v2"
 )
 
 var (

@@ -1,0 +1,33 @@
+{
+	"ImportPath": "github.com/sevein/guggmeta",
+	"GoVersion": "go1.4.2",
+	"Packages": [
+		"./..."
+	],
+	"Deps": [
+		{
+			"ImportPath": "github.com/mattn/go-colorable",
+			"Rev": "043ae16291351db8465272edf465c9f388161627"
+		},
+		{
+			"ImportPath": "github.com/olivere/elastic",
+			"Comment": "v1-15-g289cc82",
+			"Rev": "289cc82ceb395193bfb53c195a957ee815dbd315"
+		},
+		{
+			"ImportPath": "github.com/zenazn/goji/graceful",
+			"Comment": "v0.9.0-10-g739f05c",
+			"Rev": "739f05c9497895aee8d398a8ff38fb0517c4d670"
+		},
+		{
+			"ImportPath": "github.com/zenazn/goji/web",
+			"Comment": "v0.9.0-10-g739f05c",
+			"Rev": "739f05c9497895aee8d398a8ff38fb0517c4d670"
+		},
+		{
+			"ImportPath": "gopkg.in/inconshreveable/log15.v2",
+			"Comment": "v2.9",
+			"Rev": "f4b937ff5771022dceb1c0ac0397d2457fb5c357"
+		}
+	]
+}
