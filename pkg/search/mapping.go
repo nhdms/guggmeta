@@ -11,7 +11,7 @@ var mappings = map[string]string{
 				"pdfs": {
 					"type": "object",
 					"properties": {
-						"summary": {
+						"description": {
 							"type": "object",
 							"properties": {
 								"content":         { "type": "string" },
