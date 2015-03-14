@@ -2,7 +2,6 @@ package apiserver
 
 import (
 	"net"
-	"net/http"
 	"syscall"
 
 	_ "github.com/sevein/guggmeta/pkg/search"
@@ -35,9 +34,8 @@ func Start(listen string) error {
 
 	mux := web.New()
 	mux.Use(middleware.EnvInit)
-	mux.Get("/", func(rw http.ResponseWriter, req *http.Request) {
-		s.Logger.Info("GET /")
-	})
+	mux.Handle("/api/*", apiMuxer())
+	mux.Handle("/*", staticMuxer())
 
 	s.Logger.Info("Start API server")
 	ln, err := net.Listen("tcp", listen)
@@ -57,7 +55,4 @@ func Start(listen string) error {
 	}
 
 	return nil
-}
-
-func preHook() {
 }
