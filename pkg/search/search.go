@@ -2,6 +2,7 @@ package search
 
 import (
 	"errors"
+	"fmt"
 
 	"github.com/sevein/guggmeta/Godeps/_workspace/src/github.com/olivere/elastic"
 	log "github.com/sevein/guggmeta/Godeps/_workspace/src/gopkg.in/inconshreveable/log15.v2"
@@ -23,10 +24,9 @@ type Search struct {
 
 func Start(urls []string, index string) (*Search, error) {
 	s := &Search{
-		urls:  urls,
-		index: index,
-		// TODO: Use log15.v2 dynamic context values
-		Logger: log.New("module", "search", "index", index),
+		urls:   urls,
+		index:  index,
+		Logger: log.New("module", "search"),
 	}
 
 	c, err := elastic.NewClient(
@@ -44,7 +44,7 @@ func Start(urls []string, index string) (*Search, error) {
 		if err != nil {
 			return nil, errors.New("Connection failed (ping error)")
 		}
-		s.Logger.Info("Ping cluster node", "code", code, "version", info.Version.Number)
+		s.Logger.Info(fmt.Sprintf("Ping cluster node %s", url), "code", code, "version", info.Version.Number)
 	}
 
 	// Create index
@@ -53,21 +53,21 @@ func Start(urls []string, index string) (*Search, error) {
 		return nil, err
 	}
 	if !exists {
-		s.Logger.Info("Create index")
+		s.Logger.Info("Create index", "index", index)
 		if _, err := s.Client.CreateIndex(index).Do(); err != nil {
 			return nil, err
 		}
 	}
 
 	// Open index
-	s.Logger.Info("Open index")
+	s.Logger.Info("Open index", "index", index)
 	if _, err := s.Client.OpenIndex(index).Do(); err != nil {
 		return nil, err
 	}
 
 	// Register types and mappings
 	if err := checkTypes(s, index); err != nil {
-		s.Logger.Info("Register types and mappings")
+		s.Logger.Info("Register types and mappings", "index", index)
 		if err := registerTypes(s, index); err != nil {
 			return nil, err
 		}
