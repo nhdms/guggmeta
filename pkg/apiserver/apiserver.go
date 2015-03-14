@@ -2,6 +2,9 @@ package apiserver
 
 import (
 	"net"
+	"net/http"
+	"os"
+	"path/filepath"
 	"syscall"
 
 	_ "github.com/sevein/guggmeta/pkg/search"
@@ -28,16 +31,34 @@ func (s *ApiServer) postHook() {
 	s.Logger.Info("API server stopped")
 }
 
-func Start(listen string) error {
+func Start(listen string, publicDir string) error {
 	s := &ApiServer{}
-	s.Logger = log.New("module", "apiserver", "listen", listen)
+	s.Logger = log.New("module", "apiserver")
+
+	if publicDir == "" {
+		publicDir = filepath.Join(filepath.Dir(os.Args[0]), "assets")
+	}
+	var err error
+	publicDir, err = filepath.Abs(publicDir)
+	if err != nil {
+		return err
+	}
+	s.Logger.Info(publicDir)
 
 	mux := web.New()
 	mux.Use(middleware.EnvInit)
-	mux.Handle("/api/*", apiMuxer())
-	mux.Handle("/*", staticMuxer())
+	mux.Use(func(c *web.C, h http.Handler) http.Handler {
+		fn := func(w http.ResponseWriter, r *http.Request) {
+			c.Env["logger"] = &s.Logger
+			h.ServeHTTP(w, r)
+		}
+		return http.HandlerFunc(fn)
+	})
 
-	s.Logger.Info("Start API server")
+	mux.Handle("/api/*", apiMuxer())
+	mux.Handle("/*", staticMuxer(publicDir))
+
+	s.Logger.Info("Start API server", "listen", listen)
 	ln, err := net.Listen("tcp", listen)
 	if err != nil {
 		return err

@@ -12,11 +12,12 @@ import (
 )
 
 var (
-	listen   = flag.String("listen", ":8080", "http listen address")
-	esServer = flag.String("esServer", "http://127.0.0.1:9200", "elasticsearch server address (comma-separated values are accepted)")
-	esIndex  = flag.String("esIndex", "guggmeta", "elasticsearch index name")
-	dataDir  = flag.String("dataDir", "", "data directory")
-	index    = flag.Bool("index", false, "index data")
+	listen    = flag.String("listen", ":8080", "http listen address")
+	esServer  = flag.String("esServer", "http://127.0.0.1:9200", "elasticsearch server address (comma-separated values are accepted)")
+	esIndex   = flag.String("esIndex", "guggmeta", "elasticsearch index name")
+	dataDir   = flag.String("dataDir", "", "data directory")
+	publicDir = flag.String("publicDir", "", "website directory")
+	index     = flag.Bool("index", false, "index data")
 )
 
 func main() {
@@ -60,7 +61,7 @@ func main() {
 	}()
 
 	// apiserver runs in the main goroutine and listens for signals
-	if err := apiserver.Start(*listen); err != nil {
+	if err := apiserver.Start(*listen, *publicDir); err != nil {
 		logger.Crit("API server failed", "error", err.Error())
 		os.Exit(1)
 	}
