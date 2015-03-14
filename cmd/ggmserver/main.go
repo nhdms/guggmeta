@@ -2,15 +2,12 @@ package main
 
 import (
 	"flag"
-	"fmt"
-	"net/http"
 	"os"
 	"strings"
 
+	"github.com/sevein/guggmeta/pkg/apiserver"
 	"github.com/sevein/guggmeta/pkg/search"
 
-	"github.com/sevein/guggmeta/Godeps/_workspace/src/github.com/zenazn/goji/graceful"
-	"github.com/sevein/guggmeta/Godeps/_workspace/src/github.com/zenazn/goji/web"
 	log "github.com/sevein/guggmeta/Godeps/_workspace/src/gopkg.in/inconshreveable/log15.v2"
 )
 
@@ -21,10 +18,6 @@ var (
 	dataDir  = flag.String("dataDir", "", "data directory")
 	index    = flag.Bool("index", false, "index data")
 )
-
-func hello(c web.C, w http.ResponseWriter, r *http.Request) {
-	fmt.Fprintf(w, "Hello, %s!", c.URLParams["name"])
-}
 
 func main() {
 	flag.Parse()
@@ -37,32 +30,38 @@ func main() {
 
 	logger.Info("Starting application...")
 
-	s, err := search.Start(strings.Split(*esServer, ","), *esIndex)
-	if err != nil {
-		logger.Crit("Search service failed", "err", err.Error())
-		os.Exit(1)
-	}
-	defer s.Stop()
-
-	count, err := s.Count()
-	if err != nil {
-		logger.Crit("Search count failed", "err", err.Error())
-		os.Exit(1)
-	}
-	if count != 0 {
-		logger.Info("Documents available in the search index", "count", count)
-	} else if !*index {
-		logger.Warn("The search index is empty")
-	}
-
-	if *index {
-		if err := s.Index(*dataDir); err != nil {
-			logger.Crit("Index build failed", "err", err.Error())
+	// Search service
+	// TODO: the following block should go to the search package
+	go func() {
+		s, err := search.Start(strings.Split(*esServer, ","), *esIndex)
+		if err != nil {
+			logger.Crit("Search service failed", "err", err.Error())
 			os.Exit(1)
 		}
-	}
+		defer s.Stop()
 
-	r := web.New()
-	r.Get("/hello/:name", hello)
-	graceful.ListenAndServe(*listen, r)
+		count, err := s.Count()
+		if err != nil {
+			logger.Crit("Search count failed", "err", err.Error())
+			os.Exit(1)
+		}
+		if count != 0 {
+			logger.Info("Documents available in the search index", "count", count)
+		} else if !*index {
+			logger.Warn("The search index is empty")
+		}
+
+		if *index {
+			if err := s.Index(*dataDir); err != nil {
+				logger.Crit("Index build failed", "err", err.Error())
+				os.Exit(1)
+			}
+		}
+	}()
+
+	// apiserver runs in the main goroutine and listens for signals
+	if err := apiserver.Start(*listen); err != nil {
+		logger.Crit("API server failed", "error", err.Error())
+		os.Exit(1)
+	}
 }
