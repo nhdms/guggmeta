@@ -1,0 +1,13 @@
+# es.Dockerfile
+
+URL
+
+  https://github.com/docker-library/docs/tree/master/elasticsearch
+
+Usage examples:
+
+  $ docker build --file es.Dockerfile --tag es .
+  $ docker run --publish 9200:9200 --name es01 --rm es
+  $ docker run --publish 9200:9200 --name es01 --rm es
+  $ docker run --publish 9200:9200 --name es01 --rm es elasticsearch -Des.node.name="TestNode"
+  $ docker stop es01
