@@ -32,16 +32,14 @@ func main() {
 	logger.Info("Starting application...")
 
 	// Search service
-	go func() {
-		_, err := search.Start(strings.Split(*esServer, ","), *esIndex, *populate, *dataDir)
-		if err != nil {
-			logger.Crit("Search service failed", "err", err.Error())
-			os.Exit(1)
-		}
-	}()
+	s, err := search.Start(strings.Split(*esServer, ","), *esIndex, *populate, *dataDir)
+	if err != nil {
+		logger.Crit("Search service failed", "err", err.Error())
+		os.Exit(1)
+	}
 
-	// apiserver runs in the main goroutine and listens for signals
-	if _, err := apiserver.Start(*listen, *publicDir); err != nil {
+	// API service, it runs in the main goroutine and listens for signals
+	if err := apiserver.Start(s, *listen, *publicDir); err != nil {
 		logger.Crit("API server failed", "error", err.Error())
 		os.Exit(1)
 	}

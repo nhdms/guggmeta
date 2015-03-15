@@ -9,7 +9,7 @@ import (
 	"github.com/sevein/guggmeta/Godeps/_workspace/src/github.com/zenazn/goji/web"
 )
 
-func staticMuxer(publicDir string) http.Handler {
+func staticMuxer(c *apiContext, publicDir string) http.Handler {
 	m := web.New()
 
 	m.Use(staticMiddleware(publicDir, StaticOptions{Prefix: "/assets"}))
