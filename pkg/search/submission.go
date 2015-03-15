@@ -47,6 +47,9 @@ func NewSubmission(id string, path string) (*Submission, error) {
 
 func indexSubmissions(s *Search, dataDir string, index string) error {
 	err := filepath.Walk(dataDir, func(path string, info os.FileInfo, err error) error {
+		if err != nil {
+			return err
+		}
 		if info.IsDir() {
 			if filepath.Dir(path) == dataDir {
 				id := filepath.Base(path)

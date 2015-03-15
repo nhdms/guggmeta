@@ -17,7 +17,7 @@ var (
 	esIndex   = flag.String("esIndex", "guggmeta", "elasticsearch index name")
 	dataDir   = flag.String("dataDir", "", "data directory")
 	publicDir = flag.String("publicDir", "", "website directory")
-	index     = flag.Bool("index", false, "index data")
+	populate  = flag.Bool("populate", false, "populate search index")
 )
 
 func main() {
@@ -32,36 +32,16 @@ func main() {
 	logger.Info("Starting application...")
 
 	// Search service
-	// TODO: the following block should go to the search package
 	go func() {
-		s, err := search.Start(strings.Split(*esServer, ","), *esIndex)
+		_, err := search.Start(strings.Split(*esServer, ","), *esIndex, *populate, *dataDir)
 		if err != nil {
 			logger.Crit("Search service failed", "err", err.Error())
 			os.Exit(1)
 		}
-		defer s.Stop()
-
-		count, err := s.Count()
-		if err != nil {
-			logger.Crit("Search count failed", "err", err.Error())
-			os.Exit(1)
-		}
-		if count != 0 {
-			logger.Info("Documents available in the search index", "count", count)
-		} else if !*index {
-			logger.Warn("The search index is empty")
-		}
-
-		if *index {
-			if err := s.Index(*dataDir); err != nil {
-				logger.Crit("Index build failed", "err", err.Error())
-				os.Exit(1)
-			}
-		}
 	}()
 
 	// apiserver runs in the main goroutine and listens for signals
-	if err := apiserver.Start(*listen, *publicDir); err != nil {
+	if _, err := apiserver.Start(*listen, *publicDir); err != nil {
 		logger.Crit("API server failed", "error", err.Error())
 		os.Exit(1)
 	}

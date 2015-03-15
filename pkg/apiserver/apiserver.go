@@ -16,11 +16,8 @@ import (
 )
 
 type ApiServer struct {
+	net.Listener
 	log.Logger
-}
-
-func (s *ApiServer) Stop() {
-
 }
 
 func (s *ApiServer) preHook() {
@@ -31,7 +28,7 @@ func (s *ApiServer) postHook() {
 	s.Logger.Info("API server stopped")
 }
 
-func Start(listen string, publicDir string) error {
+func Start(listen string, publicDir string) (*ApiServer, error) {
 	s := &ApiServer{}
 	s.Logger = log.New("module", "apiserver")
 
@@ -41,9 +38,8 @@ func Start(listen string, publicDir string) error {
 	var err error
 	publicDir, err = filepath.Abs(publicDir)
 	if err != nil {
-		return err
+		return nil, err
 	}
-	s.Logger.Info(publicDir)
 
 	mux := web.New()
 	mux.Use(middleware.EnvInit)
@@ -59,10 +55,11 @@ func Start(listen string, publicDir string) error {
 	mux.Handle("/*", staticMuxer(publicDir))
 
 	s.Logger.Info("Start API server", "listen", listen)
-	ln, err := net.Listen("tcp", listen)
+	s.Listener, err = net.Listen("tcp", listen)
 	if err != nil {
-		return err
+		return nil, err
 	}
+	defer s.Listener.Close()
 
 	// Handle signals (should I capture SIGKILL, SIGHUP, SIGINT, SIGQUIT...?)
 	graceful.HandleSignals() // aka os.Interrupt, syscall.SIGINT
@@ -71,9 +68,9 @@ func Start(listen string, publicDir string) error {
 	graceful.PostHook(s.postHook)
 
 	g := &graceful.Server{Handler: mux}
-	if err := g.Serve(ln); err != nil {
-		return err
+	if err := g.Serve(s.Listener); err != nil {
+		return nil, err
 	}
 
-	return nil
+	return s, nil
 }
