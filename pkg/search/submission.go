@@ -3,6 +3,8 @@ package search
 import (
 	"os"
 	"path/filepath"
+
+	"github.com/sevein/guggmeta/pkg/pdf"
 )
 
 const TYPE = "submission"
@@ -13,9 +15,9 @@ type Submission struct {
 }
 
 type PdfSubmissions struct {
-	Description Pdf `json:"description,omitempty"`
-	Boards      Pdf `json:"boards,omitempty"`
-	Summary     Pdf `json:"summary,omitempty"`
+	Description pdf.Document `json:"description,omitempty"`
+	Boards      pdf.Document `json:"boards,omitempty"`
+	Summary     pdf.Document `json:"summary,omitempty"`
 }
 
 func (p PdfSubmissions) Empty() bool {
@@ -28,13 +30,13 @@ func NewSubmission(id string, path string) (*Submission, error) {
 	}
 
 	pdfs := PdfSubmissions{}
-	if pdf, err := NewPdf(filepath.Join(path, id+"-partA.pdf")); err == nil {
+	if pdf, err := pdf.Parse(filepath.Join(path, id+"-partA.pdf")); err == nil {
 		pdfs.Description = *pdf
 	}
-	if pdf, err := NewPdf(filepath.Join(path, id+"-partB.pdf")); err == nil {
+	if pdf, err := pdf.Parse(filepath.Join(path, id+"-partB.pdf")); err == nil {
 		pdfs.Boards = *pdf
 	}
-	if pdf, err := NewPdf(filepath.Join(path, id+"-partC3.pdf")); err == nil {
+	if pdf, err := pdf.Parse(filepath.Join(path, id+"-partC3.pdf")); err == nil {
 		pdfs.Summary = *pdf
 	}
 

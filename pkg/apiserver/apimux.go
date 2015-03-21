@@ -47,7 +47,7 @@ func apiGetSubmission(ctx *apiContext, c web.C, w http.ResponseWriter, r *http.R
 	if !resp.Found {
 		return http.StatusNotFound, errors.New("Submission not found")
 	}
-	j, err := json.Marshal(resp.Source)
+	j, err := json.MarshalIndent(resp.Source, "", "  ")
 	if err != nil {
 		return http.StatusInternalServerError, err
 	}

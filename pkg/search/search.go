@@ -2,7 +2,6 @@ package search
 
 import (
 	"errors"
-	"fmt"
 
 	"github.com/sevein/guggmeta/Godeps/_workspace/src/github.com/olivere/elastic"
 	log "github.com/sevein/guggmeta/Godeps/_workspace/src/gopkg.in/inconshreveable/log15.v2"
@@ -45,7 +44,7 @@ func Start(urls []string, index string, populate bool, dataDir string) (*Search,
 		if err != nil {
 			return nil, errors.New("Connection failed (ping error)")
 		}
-		s.Logger.Info(fmt.Sprintf("Ping cluster node %s", url), "code", code, "version", info.Version.Number)
+		s.Logger.Info("Ping cluster", "code", code, "node", url, "version", info.Version.Number)
 	}
 
 	// Create index
