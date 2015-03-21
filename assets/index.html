@@ -10,7 +10,17 @@
   <body ng-controller="MainCtrl">
     <div class="alert alert-info">
       <h4>Hello!</h4>
-      <p>Welcome to guggmeta! ({{ time }})</p>
+      <p>Welcome to guggmeta!</p>
+    </div>
+    <div>
+      <table class="table table-bordered">
+        <tr>
+          <th>ID</th>
+        </tr>
+        <tr ng-repeat="item in submissions">
+          <td>{{ item._id }}</td>
+        </tr>
+      </table>
     </div>
     <script src="/assets/bower_components/angular/angular.min.js"></script>
     <script src="/assets/bower_components/angular-ui-router/release/angular-ui-router.min.js"></script>
