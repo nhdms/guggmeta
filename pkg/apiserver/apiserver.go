@@ -1,7 +1,9 @@
 package apiserver
 
 import (
+	"encoding/json"
 	"net"
+	"net/http"
 	"os"
 	"path/filepath"
 	"syscall"
@@ -15,16 +17,10 @@ import (
 )
 
 type apiContext struct {
+	indent bool
+
 	*search.Search
 	log.Logger
-}
-
-func (s *apiContext) preHook() {
-	s.Logger.Info("API server received signal, gracefully stopping")
-}
-
-func (s *apiContext) postHook() {
-	s.Logger.Info("API server stopped")
 }
 
 func Start(search *search.Search, listen string, publicDir string) error {
@@ -69,4 +65,33 @@ func Start(search *search.Search, listen string, publicDir string) error {
 	}
 
 	return nil
+}
+
+func (s *apiContext) preHook() {
+	s.Logger.Info("API server received signal, gracefully stopping")
+}
+
+func (s *apiContext) postHook() {
+	s.Logger.Info("API server stopped")
+}
+
+// WriteJson writes JSON! Reminder: http.ResponseWriter is an interface so
+// we pass its value to this function because internally it contains a pointer
+// to the actual Writer. We almost never going to need a pointer to an
+// interface.
+func (s *apiContext) WriteJson(w http.ResponseWriter, v interface{}) error {
+	var (
+		j   []byte
+		err error
+	)
+	if s.indent {
+		j, err = json.MarshalIndent(v, "", "  ")
+	} else {
+		j, err = json.Marshal(v)
+	}
+	if err != nil {
+		return err
+	}
+	_, err = w.Write(j)
+	return err
 }
