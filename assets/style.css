@@ -1,23 +1,192 @@
-html, body {
-  border-top: 2px solid #88d2ff;
+html {
+  font-family: 'RobotoDraft';
 }
 
-body {
-  padding: 40px;
+/**
+ * Header
+ */
+
+#global-header {
+  background-color: black;
 }
 
-.title {
-  background-color: #88d2ff;
-  padding: 2px 16px;
-  border-radius: 4px;
-  text-decoration: none;
+#global-header h1 {
+  margin: 0;
+  padding: 10px;
+  font-size: 30px;
+  text-rendering: optimizeLegibility;
+}
+
+#global-header a {
+  margin: 0;
+  color: #fff;
+}
+
+.homepage-top {
+  height: 200px;
+  background-color: #75a500;
+  color: white;
+  font-size: 48px;
+  text-align: center;
+  line-height: 200px;
+}
+
+/**
+ * Content
+ */
+
+#content {
+  padding: 20px 0 0 0;
+}
+
+/**
+ * Submission
+ */
+
+.submission h2 {
+  text-align: center;
+  background-color: #053f63;
+  color: yellow;
+  padding: 10px;
+}
+
+.submission .prev {
+  padding: 0;
+}
+
+.submission .prev img {
+  width: 100%;
+}
+
+.submission .prev:first-child img {
+  margin-bottom: 20px;
+}
+
+.submission .first-unknown {
+  border-top: 3px solid #ddd;
+}
+
+.part h4 {
+  text-transform: uppercase;
+}
+
+.part .name {
+  font-weight: bold;
+  text-transform: uppercase;
+}
+
+.part .hidden-field {
+  color: #999;
+}
+
+/**
+ * Finalist grid
+ * Borrowed from http://designguggenheimhelsinki.org/finalists/
+ */
+
+.finalist-grid {
+  list-style: none;
+  padding: 0;
+  font-size: .8125em;
+  font-weight: bold;
+  clear: both;
+  margin: 0 -10px 1.5625em -10px;
+  overflow: hidden;
+}
+@media only screen and (max-width: 719px) {
+  .finalist-grid {
+    width: auto;
+    margin: 10px -5px 10px -10px;
+  }
+}
+.finalist-grid li {
+  position: relative;
+  float: left;
+  width: 16.66666667%;
+  overflow: hidden;
+  -webkit-box-sizing: border-box;
+  -moz-box-sizing: border-box;
+  box-sizing: border-box;
+}
+@media only screen and (min-width: 720px) and (max-width: 959px) {
+  .finalist-grid li {
+    width: 33.33333333%;
+  }
+}
+@media only screen and (max-width: 719px) {
+  .finalist-grid li {
+    width: 50%;
+  }
+}
+.finalists-index .finalist-grid li {
+  position: relative;
+  float: left;
+  width: 33.33333333%;
+  overflow: hidden;
+  -webkit-box-sizing: border-box;
+  -moz-box-sizing: border-box;
+  box-sizing: border-box;
+}
+@media only screen and (min-width: 720px) and (max-width: 959px) {
+  .finalists-index .finalist-grid li {
+    width: 33.33333333%;
+  }
+}
+@media only screen and (max-width: 719px) {
+  .finalists-index .finalist-grid li {
+    width: 50%;
+  }
+}
+.finalist-grid a:active img {
+  opacity: .8;
+}
+.finalist-grid .finalist-entry {
+  position: relative;
+  overflow: hidden;
+  background-color: #000;
+  margin: 10px;
+}
+@media only screen and (max-width: 719px) {
+  .finalist-grid .finalist-entry {
+    margin: 0 5px 15px 10px;
+  }
+}
+.finalist-grid .finalist-entry-image {
+  overflow: hidden;
+}
+.finalist-grid .finalist-entry-image img {
+  width: 100%;
+  z-index: 1;
+  float: left;
+}
+.finalist-grid .finalist-entry dl {
+  color: #ffffff;
+  position: absolute;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  z-index: 20;
+  -webkit-box-sizing: border-box;
+  -moz-box-sizing: border-box;
+  box-sizing: border-box;
+  padding: 2em 1em 1em;
+  margin: 0;
+  overflow: hidden;
+  background-color: rgba(0, 0, 0, 0);
+  background: -webkit-gradient(linear, left top, left bottom, from(rgba(0, 0, 0, 0)), to(rgba(0, 0, 0, 0.8)));
+  background: -webkit-linear-gradient(top, rgba(0, 0, 0, 0), rgba(0, 0, 0, 0.8));
+  background: -moz-linear-gradient(top, rgba(0, 0, 0, 0), rgba(0, 0, 0, 0.8));
+  background: -ms-linear-gradient(top, rgba(0, 0, 0, 0), rgba(0, 0, 0, 0.8));
+  background: -o-linear-gradient(top, rgba(0, 0, 0, 0), rgba(0, 0, 0, 0.8));
+}
+.finalist-grid .finalist-entry dd {
+  margin: 0;
+  color: #81adc0;
+}
+.finalist-grid .finalist-entry a {
   display: block;
 }
-
-h1, h2, h3, h4, h5 {
-  color: #053f63;
-}
-
-a {
-  color: blue;
+.finalist-grid .finalist-entry a:hover img,
+.active-entry img {
+  opacity: .1;
 }

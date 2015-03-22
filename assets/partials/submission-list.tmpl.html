@@ -1,5 +1,9 @@
-<ul>
-  <li ng-repeat="item in submissions">
-    <a href="/submissions/{{ item._id }}">{{ item._id }}</a>
-  </li>
-</ul>
+<h4>Full list</h4>
+
+<table class="table table-bordered">
+  <tr ng-repeat="item in submissions">
+    <td>
+      <a href="/submissions/{{ item._id }}">{{ item._id }}</a>
+    </td>
+  </tr>
+</table>

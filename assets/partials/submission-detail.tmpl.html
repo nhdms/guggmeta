@@ -1,9 +1,70 @@
-<h2>{{ id }}</h2>
+<section class="submission">
 
-<pre>
-  {{ submission | json }}
-</pre>
+  <div class="row parts">
 
-<hr />
+    <div class="col-xs-12">
+      <ol class="breadcrumb">
+        <li><a href="/submissions">Submissions</a></li>
+        <li class="active">{{ id }}</li>
+      </ol>
+    </div>
 
-<a href="/submissions">&laquo Back</a>
+    <div class="previews col-xs-12 col-lg-3">
+      <div class="row">
+        <div class="prev col-xs-12 col-sm-6 col-lg-12">
+          <a href="https://s3-us-west-2.amazonaws.com/api.designguggenheimhelsinki.org/v1/data/v1/{{ id }}/{{ id }}-partC1.jpg" target="_blank">
+            <img src="https://s3-us-west-2.amazonaws.com/api.designguggenheimhelsinki.org/v1/data/v1/{{ id }}/{{ id }}-partC1.jpg">
+          </a>
+        </div>
+        <div class="prev col-xs-12 col-sm-6 col-lg-12">
+          <a href="https://s3-us-west-2.amazonaws.com/api.designguggenheimhelsinki.org/v1/data/v1/{{ id }}/{{ id }}-partC2.jpg" target="_blank">
+            <img src="https://s3-us-west-2.amazonaws.com/api.designguggenheimhelsinki.org/v1/data/v1/{{ id }}/{{ id }}-partC2.jpg">
+          </a>
+        </div>
+      </div>
+    </div>
+
+    <div class="col-xs-12 col-lg-9">
+      <div ng-repeat="item in submission.pdfs" class="part row">
+        <div class="col-xs-12">
+        <h4>PDF {{ item.type }}</h4>
+          <table class="table table-bordered">
+            <tr>
+              <td class="name">File</td>
+              <td><a href="https://s3-us-west-2.amazonaws.com/api.designguggenheimhelsinki.org/v1/data/v1/{{ id }}/{{ item.file_name }}" target="_blank">{{ item.file_name }}</a></td>
+            </tr>
+            <tr>
+              <td class="name">Author</td>
+              <td>
+                <span class="hidden-field">&lthidden&gt</span>
+              </td>
+            </tr>
+            <tr ng-if="item[f.property]" ng-repeat="f in submissionFields">
+              <td class="name">{{ f.label }}</td>
+              <td ng-switch="f.property">
+                <span ng-switch-when="creation_date">
+                  {{ item[f.property] | date:'medium' }}
+                </span>
+                <span ng-switch-when="mod_date">
+                  {{ item[f.property] | date:'medium' }}
+                </span>
+                <span ng-switch-default>
+                  {{ item[f.property] }}
+                  <span ng-if="f.suffix">{{ f.suffix }}</span>
+                </span>
+              </td>
+            </tr>
+            <tr ng-if="item[f.property] == undefined" ng-repeat="f in submissionFields" ng-class="{ 'first-unknown': $first }">
+              <td class="name">{{ f.label }}</td>
+              <td>
+                <span class="hidden-field">&ltunknown&gt</span>
+              </td>
+            </tr>
+          </table>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+</section>
