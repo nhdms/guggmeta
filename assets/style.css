@@ -1,4 +1,23 @@
+html, body {
+  border-top: 2px solid #88d2ff;
+}
+
 body {
-  background-color: #eee;
-  margin: 100px;
+  padding: 40px;
+}
+
+.title {
+  background-color: #88d2ff;
+  padding: 2px 16px;
+  border-radius: 4px;
+  text-decoration: none;
+  display: block;
+}
+
+h1, h2, h3, h4, h5 {
+  color: #053f63;
+}
+
+a {
+  color: blue;
 }

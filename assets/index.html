@@ -2,28 +2,22 @@
 <html lang="en" ng-app="guggmeta">
   <head>
     <meta charset="utf-8">
+    <base href="/">
     <title>guggmeta</title>
-    <link rel="stylesheet" href="/assets/bower_components/bootstrap/dist/css/bootstrap.min.css">
+    <link rel="stylesheet" href="/assets/bower_components/angular-material/angular-material.min.css">
     <link rel="stylesheet" href="/assets/style.css">
     <style>[ng-cloak] { display: none; }</style>
   </head>
-  <body ng-controller="MainCtrl">
-    <div class="alert alert-info">
-      <h4>Hello!</h4>
-      <p>Welcome to guggmeta!</p>
-    </div>
-    <div>
-      <table class="table table-bordered">
-        <tr>
-          <th>ID</th>
-        </tr>
-        <tr ng-repeat="item in submissions">
-          <td>{{ item._id }}</td>
-        </tr>
-      </table>
-    </div>
+  <body>
+    <a href="/" class="title">
+      <h1>Guggenheim Helsinki</h1>
+    </a>
+    <div ng-view></div>
     <script src="/assets/bower_components/angular/angular.min.js"></script>
-    <script src="/assets/bower_components/angular-ui-router/release/angular-ui-router.min.js"></script>
+    <script src="/assets/bower_components/angular-animate/angular-animate.min.js"></script>
+    <script src="/assets/bower_components/angular-aria/angular-aria.min.js"></script>
+    <script src="/assets/bower_components/angular-material/angular-material.min.js"></script>
+    <script src="/assets/bower_components/angular-route/angular-route.min.js"></script>
     <script src="/assets/app.js"></script>
   </body>
 </html>
