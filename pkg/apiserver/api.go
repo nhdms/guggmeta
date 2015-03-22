@@ -38,11 +38,13 @@ func apiIndex(w http.ResponseWriter, r *http.Request) {
 
 func apiGetSubmissions(ctx *apiContext, c web.C, w http.ResponseWriter, r *http.Request) {
 	q := elastic.NewMatchAllQuery()
-	sr, err := rangedSearch(q, "guggmeta", []string{"_id"}, []string{"id"}, ctx, w, r)
+	sr, err := rangedSearch(q, "guggmeta", []string{"_id"}, []string{"_id"}, ctx, w, r)
 	if err != nil {
 		w.WriteHeader(http.StatusInternalServerError)
+		ctx.Logger.Error("Unexpected error", "error", err)
+		return
 	}
-	if err := ctx.WriteJson(w, sr.Hits); err != nil {
+	if err := ctx.WriteJson(w, NewApiListResponse(sr)); err != nil {
 		w.WriteHeader(http.StatusInternalServerError)
 	}
 }
@@ -52,9 +54,12 @@ func apiGetSubmission(ctx *apiContext, c web.C, w http.ResponseWriter, r *http.R
 	resp, err := ctx.Search.Client.Get().Index("guggmeta").Type("submission").Id(id).Do()
 	if err != nil {
 		w.WriteHeader(http.StatusInternalServerError)
+		ctx.Logger.Error("Unexpected error", "error", err)
+		return
 	}
 	if !resp.Found {
 		http.NotFound(w, r)
+		return
 	}
 	if err := ctx.WriteJson(w, resp.Source); err != nil {
 		w.WriteHeader(http.StatusInternalServerError)
@@ -122,7 +127,7 @@ func rangedSearch(q elastic.Query, index string, fields []string, orders []strin
 
 	// We run the *SearchQuery and obtain a *SearchResult
 	sq := ctx.Search.Client.Search().Index(index).Query(q).From(from).Size(size)
-	// TODO: sq.Sort(sort, order == "asc")
+	sq.Sort(sort, order == "asc")
 
 	if len(fields) > 0 {
 		sq.Fields(fields...)
@@ -148,4 +153,23 @@ func rangedSearch(q elastic.Query, index string, fields []string, orders []strin
 	}
 
 	return sr, err
+}
+
+type ApiListResponse struct {
+	Results []ApiHit `json:"results"`
+	Total   int64    `json:"total"`
+}
+
+type ApiHit map[string]interface{}
+
+func NewApiListResponse(sr *elastic.SearchResult) *ApiListResponse {
+	r := &ApiListResponse{
+		Results: []ApiHit{},
+		Total:   sr.Hits.TotalHits,
+	}
+	for _, hit := range sr.Hits.Hits {
+		ah := ApiHit(hit.Fields)
+		r.Results = append(r.Results, ah)
+	}
+	return r
 }
