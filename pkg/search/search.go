@@ -95,9 +95,7 @@ func Start(urls []string, index string, populate bool, dataDir string) (*Search,
 
 	// Populate search index
 	if populate {
-		if err := s.Populate(dataDir); err != nil {
-			return nil, err
-		}
+		go s.Populate(dataDir)
 	}
 
 	return s, nil
