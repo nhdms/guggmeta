@@ -13,8 +13,10 @@ func staticMuxer(c *apiContext, publicDir string) http.Handler {
 	m := web.New()
 
 	m.Use(staticMiddleware(publicDir, StaticOptions{Prefix: "/assets"}))
-	m.Get("/", index(publicDir))
-	m.Get("/*", indexCatchAny)
+
+	// This is going to serve /assets/index.html regardless the URL, which makes
+	// things easy in AngularJs but I don't know if it's a good idea in general.
+	m.Get("/*", index(publicDir))
 
 	return m
 }
