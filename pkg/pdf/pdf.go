@@ -70,7 +70,10 @@ func Parse(path string) (*Document, error) {
 		case "Subject":
 			p.Subject = v
 		case "Keywords":
-			p.Keywords = strings.Split(v, " ")
+			k := strings.Split(v, " ")
+			if len(k) > 1 || len(strings.Trim(k[0], " ")) > 0 {
+				p.Keywords = k
+			}
 		case "Author":
 			p.Author = v
 		case "Creator":
