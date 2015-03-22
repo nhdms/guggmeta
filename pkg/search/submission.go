@@ -1,47 +1,60 @@
 package search
 
 import (
+	"fmt"
 	"os"
 	"path/filepath"
 
 	"github.com/sevein/guggmeta/pkg/pdf"
 )
 
-const TYPE = "submission"
-
+// Submission represents a competition entry. This is the object that we are
+// encoding to JSON and sending to Elasticsearch.
 type Submission struct {
-	Id   string         `json:"_id"`
-	Pdfs PdfSubmissions `json:"pdfs,omitempty"`
+	Id   string    `json:"_id"`
+	Pdfs []PdfPart `json:"pdfs,omitempty"`
 }
 
-type PdfSubmissions struct {
-	Description pdf.Document `json:"description,omitempty"`
-	Boards      pdf.Document `json:"boards,omitempty"`
-	Summary     pdf.Document `json:"summary,omitempty"`
+// PdfPart represents a PDF document in a submission.
+type PdfPart struct {
+	Type string `json:"type,omitempty"`
+	pdf.Document
 }
 
-func (p PdfSubmissions) Empty() bool {
-	return false
+var pdfParts map[string]map[string]string = map[string]map[string]string{
+	"description": map[string]string{
+		"pattern": "%s-partA.pdf",
+	},
+	"boards": map[string]string{
+		"pattern": "%s-partB.pdf",
+	},
+	"summary": map[string]string{
+		"pattern": "%s-partC3.pdf",
+	},
 }
 
+const SubmissionType = "submission"
+
+// NewSubmission takes the ID of a given submission and its path in the
+// filesystem and returns a Submission object containing its metadata,
+// including the details found inside the different PDF parts.
 func NewSubmission(id string, path string) (*Submission, error) {
 	s := &Submission{
-		Id: id,
+		Id:   id,
+		Pdfs: make([]PdfPart, 3),
 	}
 
-	pdfs := PdfSubmissions{}
-	if pdf, err := pdf.Parse(filepath.Join(path, id+"-partA.pdf")); err == nil {
-		pdfs.Description = *pdf
-	}
-	if pdf, err := pdf.Parse(filepath.Join(path, id+"-partB.pdf")); err == nil {
-		pdfs.Boards = *pdf
-	}
-	if pdf, err := pdf.Parse(filepath.Join(path, id+"-partC3.pdf")); err == nil {
-		pdfs.Summary = *pdf
-	}
-
-	if !pdfs.Empty() {
-		s.Pdfs = pdfs
+	i := 0
+	for key, value := range pdfParts {
+		p := &PdfPart{
+			Type: key,
+		}
+		f := filepath.Join(path, fmt.Sprintf(value["pattern"], id))
+		if d, err := pdf.Parse(f); err == nil {
+			p.Document = *d
+		}
+		s.Pdfs[i] = *p
+		i++
 	}
 
 	return s, nil
@@ -62,7 +75,7 @@ func indexSubmissions(s *Search, dataDir string, index string) error {
 					return err
 				}
 
-				_, err = s.Client.Index().Index(index).Type(TYPE).Id(id).BodyJson(submission).Do()
+				_, err = s.Client.Index().Index(index).Type(SubmissionType).Id(id).BodyJson(submission).Do()
 				if err != nil {
 					s.Logger.Warn("Index error", "error", err.Error())
 				}
