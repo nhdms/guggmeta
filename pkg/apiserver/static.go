@@ -14,6 +14,7 @@ func staticMuxer(c *apiContext, publicDir string) http.Handler {
 
 	m.Use(staticMiddleware(publicDir, StaticOptions{Prefix: "/assets"}))
 	m.Get("/", index(publicDir))
+	m.Get("/*", indexCatchAny)
 
 	return m
 }
@@ -22,6 +23,10 @@ func index(publicDir string) func(w http.ResponseWriter, r *http.Request) {
 	return func(w http.ResponseWriter, r *http.Request) {
 		http.ServeFile(w, r, filepath.Join(publicDir, "index.html"))
 	}
+}
+
+func indexCatchAny(w http.ResponseWriter, r *http.Request) {
+	http.Redirect(w, r, "/", http.StatusMovedPermanently)
 }
 
 // StaticOptions is a struct for specifiying configuration options for the goji-static middleware.
