@@ -3,13 +3,14 @@ package search
 import "errors"
 
 var submissionTypeProperties = `{
-	"type":            { "type": "string",  "store": true, "index": "not_analyzed" },
 	"content":         { "type": "string",  "store": true, "index": "analyzed" },
 	"producer":        { "type": "string",  "store": true, "index": "analyzed" },
 	"title":           { "type": "string",  "store": true, "index": "analyzed" },
 	"subject":         { "type": "string",  "store": true, "index": "analyzed" },
 	"author":          { "type": "string",  "store": true, "index": "analyzed" },
 	"creator":         { "type": "string",  "store": true, "index": "analyzed" },
+	"file_name":       { "type": "string",  "store": true, "index": "not_analyzed" },
+	"type":            { "type": "string",  "store": true, "index": "not_analyzed" },
 	"keywords":        { "type": "string",  "store": true, "index": "not_analyzed" },
 	"form":            { "type": "string",  "store": true, "index": "not_analyzed" },
 	"page_size":       { "type": "string",  "store": true, "index": "not_analyzed" },

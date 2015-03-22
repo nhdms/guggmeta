@@ -60,7 +60,22 @@ func NewSubmission(id string, path string) (*Submission, error) {
 	return s, nil
 }
 
+var finalists = [6]string{
+	"GH-04380895",
+	"GH-1128435973",
+	"GH-121371443",
+	"GH-5059206475",
+	"GH-5631681770",
+	"GH-76091181",
+}
+
 func indexSubmissions(s *Search, dataDir string, index string) error {
+	// Start with finalists
+	for _, id := range finalists {
+		path := filepath.Join(dataDir, id)
+		indexSubmission(id, s, index, path)
+	}
+	// Walk the directory
 	err := filepath.Walk(dataDir, func(path string, info os.FileInfo, err error) error {
 		if err != nil {
 			return err
@@ -68,22 +83,32 @@ func indexSubmissions(s *Search, dataDir string, index string) error {
 		if info.IsDir() {
 			if filepath.Dir(path) == dataDir {
 				id := filepath.Base(path)
-
-				s.Logger.Info("Index submission", "id", id)
-				submission, err := NewSubmission(id, path)
-				if err != nil {
-					return err
+				for _, item := range finalists {
+					if item == id {
+						return nil
+					}
 				}
-
-				_, err = s.Client.Index().Index(index).Type(SubmissionType).Id(id).BodyJson(submission).Do()
-				if err != nil {
-					s.Logger.Warn("Index error", "error", err.Error())
-				}
+				indexSubmission(id, s, index, path)
 			}
 		}
 		return nil
 	})
 	if err != nil {
+		return err
+	}
+	return nil
+}
+
+func indexSubmission(id string, s *Search, index string, path string) error {
+	s.Logger.Info("Index submission", "id", id)
+	submission, err := NewSubmission(id, path)
+	if err != nil {
+		return err
+	}
+
+	_, err = s.Client.Index().Index(index).Type(SubmissionType).Id(id).BodyJson(submission).Do()
+	if err != nil {
+		s.Logger.Warn("Index error", "error", err.Error())
 		return err
 	}
 	return nil
