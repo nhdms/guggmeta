@@ -4,6 +4,7 @@ import (
 	"errors"
 	"os"
 	"os/exec"
+	"path/filepath"
 	"regexp"
 	"strconv"
 	"strings"
@@ -13,27 +14,32 @@ import (
 // Document represents a PDF file with some of its contents
 // (http://git.io/hisM).
 type Document struct {
+	FileName string `json:"file_name,omitempty"`
+
+	// Context is extracted with pdftotext
+	Content string `json:"content,omitempty"`
+
+	// The following attributes are extracted with pdfinfo
 	Author         string    `json:"author,omitempty"`
-	Content        string    `json:"content,omitempty"`
 	CreationDate   time.Time `json:"creation_date,omitempty"`
 	Creator        string    `json:"creator,omitempty"`
-	Encrypted      bool      `json:"encrypted,omitempty"`
+	Encrypted      bool      `json:"encrypted"`
 	FileSize       int64     `json:"file_size,omitempty"`
 	Form           string    `json:"form,omitempty"`
-	JavaScript     bool      `json:"javascript,omitempty"`
+	JavaScript     bool      `json:"javascript"`
 	Keywords       []string  `json:"keywords,omitempty"`
 	ModDate        time.Time `json:"mod_date,omitempty"`
-	Optimized      bool      `json:"optimized,omitempty"`
+	Optimized      bool      `json:"optimized"`
 	PageRot        int16     `json:"page_rot,omitempty"`
 	PageSize       string    `json:"page_size,omitempty"`
 	Pages          int16     `json:"pages,omitempty"`
 	PdfVersion     float32   `json:"pdf_version,omitempty"`
 	Producer       string    `json:"producer,omitempty"`
 	Subject        string    `json:"subject,omitempty"`
-	Suspects       bool      `json:"suspects,omitempty"`
-	Tagged         bool      `json:"tagged,omitempty"`
+	Suspects       bool      `json:"suspects"`
+	Tagged         bool      `json:"tagged"`
 	Title          string    `json:"title,omitempty"`
-	UserProperties bool      `json:"user_properties,omitempty"`
+	UserProperties bool      `json:"user_properties"`
 }
 
 // Parse takes a string with the path of the given PDF document and returns its
@@ -43,7 +49,9 @@ func Parse(path string) (*Document, error) {
 	if _, err := os.Stat(path); os.IsNotExist(err) {
 		return nil, errors.New("No such file or directory")
 	}
-	p := &Document{}
+	p := &Document{
+		FileName: filepath.Base(path),
+	}
 
 	c, err := pdftotext(path)
 	if err != nil {
@@ -89,34 +97,24 @@ func Parse(path string) (*Document, error) {
 				p.ModDate = t
 			}
 		case "Tagged":
-			if t, err := parseBool(v); err == nil {
-				p.Tagged = t
-			}
+			p.Tagged = parseBool(v)
 		case "UserProperties":
-			if t, err := parseBool(v); err == nil {
-				p.UserProperties = t
-			}
+			p.UserProperties = parseBool(v)
 		case "Suspects":
-			if t, err := parseBool(v); err == nil {
-				p.Suspects = t
-			}
+			p.Suspects = parseBool(v)
 		case "Form":
 			// Examples: "none", "AcroForm", "XFA"
 			if v != "none" {
 				p.Form = v
 			}
 		case "JavaScript":
-			if t, err := parseBool(v); err == nil {
-				p.JavaScript = t
-			}
+			p.JavaScript = parseBool(v)
 		case "Pages":
 			if t, err := strconv.ParseInt(v, 10, 16); err == nil {
 				p.Pages = int16(t)
 			}
 		case "Encrypted":
-			if t, err := parseBool(v); err == nil {
-				p.Encrypted = t
-			}
+			p.Encrypted = parseBool(v)
 		case "Page size":
 			p.PageSize = v
 		case "Page rot":
@@ -126,14 +124,12 @@ func Parse(path string) (*Document, error) {
 		case "File size":
 			parts := strings.Split(v, " ")
 			if len(parts) == 2 && parts[1] == "bytes" {
-				if t, err := strconv.ParseInt(parts[1], 10, 64); err == nil {
+				if t, err := strconv.ParseInt(parts[0], 10, 64); err == nil {
 					p.FileSize = t
 				}
 			}
 		case "Optimized":
-			if t, err := parseBool(v); err == nil {
-				p.Optimized = t
-			}
+			p.Optimized = parseBool(v)
 		case "PDF version":
 			if t, err := strconv.ParseFloat(v, 32); err == nil {
 				p.PdfVersion = float32(t)
@@ -156,14 +152,6 @@ func parseTime(value string) (time.Time, error) {
 	return time.Parse(time.ANSIC, value)
 }
 
-// parseBool does not use srconv.ParseBool because "yes" or "no" are not
-// recognized values
-func parseBool(value string) (bool, error) {
-	if strings.HasSuffix(value, "yes") {
-		return true, nil
-	} else if strings.HasSuffix(value, "no") {
-		return false, nil
-	} else {
-		return false, errors.New("Unrecognized value")
-	}
+func parseBool(value string) bool {
+	return strings.HasSuffix(value, "yes")
 }
