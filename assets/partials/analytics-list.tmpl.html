@@ -1,0 +1,108 @@
+<section class="analytics-list">
+
+  <div class="row">
+
+    <div class="col-xs-12">
+      <ol class="breadcrumb">
+        <li><a href="/">Home</a></li>
+        <li class="active">Analytics</li>
+      </ol>
+    </div>
+
+  </div>
+
+  <div class="row">
+    <div class="col-xs-12 col-md-6">
+      <h3>Creators</h3>
+      <table class="table table-bordered">
+        <tr>
+          <th>Name</th>
+          <th>Count</th>
+        </tr>
+        <tr ng-repeat="item in analytics.creator.buckets">
+          <td>{{ item.key }}</td>
+          <td>{{ item.doc_count }}</td>
+        </tr>
+        <tr ng-if="analytics.creator.sum_other_doc_count > 0">
+          <td>Other</td>
+          <td>{{ analytics.creator.sum_other_doc_count }}</td>
+        </tr>
+      </table>
+    </div>
+    <div class="col-xs-12 col-md-6">
+      <h3>Producers</h3>
+      <table class="table table-bordered">
+        <tr>
+          <th>Name</th>
+          <th>Count</th>
+        </tr>
+        <tr ng-repeat="item in analytics.producer.buckets">
+          <td>{{ item.key }}</td>
+          <td>{{ item.doc_count }}</td>
+        </tr>
+        <tr ng-if="analytics.producer.sum_other_doc_count > 0">
+          <td>Other</td>
+          <td>{{ analytics.producer.sum_other_doc_count }}</td>
+        </tr>
+      </table>
+    </div>
+  </div>
+
+  <div class="row">
+    <div class="col-xs-12 col-md-6">
+      <h3>File sizes</h3>
+      <table class="table table-bordered">
+        <tr>
+          <th>Name</th>
+          <th>Count</th>
+        </tr>
+        <tr ng-repeat="item in analytics.file_size.buckets">
+          <td>{{ item.key }}</td>
+          <td>{{ item.doc_count }}</td>
+        </tr>
+        <tr ng-if="analytics.file_size.sum_other_doc_count > 0">
+          <td>Other</td>
+          <td>{{ analytics.file_size.sum_other_doc_count }}</td>
+        </tr>
+      </table>
+    </div>
+    <div class="col-xs-12 col-md-6">
+      <h3>Page sizes</h3>
+      <table class="table table-bordered">
+        <tr>
+          <th>Name</th>
+          <th>Count</th>
+        </tr>
+        <tr ng-repeat="item in analytics.page_size.buckets">
+          <td>{{ item.key }}</td>
+          <td>{{ item.doc_count }}</td>
+        </tr>
+        <tr ng-if="analytics.page_size.sum_other_doc_count > 0">
+          <td>Other</td>
+          <td>{{ analytics.page_size.sum_other_doc_count }}</td>
+        </tr>
+      </table>
+    </div>
+  </div>
+
+  <div class="row">
+    <div class="col-xs-12 col-md-6">
+      <h3>PDF versions</h3>
+      <table class="table table-bordered">
+        <tr>
+          <th>Name</th>
+          <th>Count</th>
+        </tr>
+        <tr ng-repeat="item in analytics.pdf_version.buckets">
+          <td>{{ item.key }}</td>
+          <td>{{ item.doc_count }}</td>
+        </tr>
+        <tr ng-if="analytics.pdf_version.sum_other_doc_count > 0">
+          <td>Other</td>
+          <td>{{ analytics.pdf_version.sum_other_doc_count }}</td>
+        </tr>
+      </table>
+    </div>
+  </div>
+
+</section>

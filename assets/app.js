@@ -19,6 +19,10 @@ app.config(['$routeProvider', '$locationProvider', function ($routeProvider, $lo
       templateUrl: '/assets/partials/home.tmpl.html',
       controller: 'HomeCtrl'
     })
+    .when('/analytics', {
+      templateUrl: '/assets/partials/analytics-list.tmpl.html',
+      controller: 'AnalyticsListCtrl'
+    })
     .when('/submissions', {
       templateUrl: '/assets/partials/submission-list.tmpl.html',
       controller: 'SubmissionListCtrl'
@@ -36,6 +40,12 @@ app.config(['$routeProvider', '$locationProvider', function ($routeProvider, $lo
 
 app.controller('HomeCtrl', ['$scope', function ($scope) {
 
+}]);
+
+app.controller('AnalyticsListCtrl', ['$scope', 'SubmissionService', function ($scope, SubmissionService) {
+  SubmissionService.getAnalytics().then(function (response) {
+    $scope.analytics = response.data;
+  });
 }]);
 
 app.controller('SubmissionListCtrl', ['$scope', 'SubmissionService', function ($scope, SubmissionService) {
@@ -79,5 +89,8 @@ app.service('SubmissionService', ['$http', function ($http) {
   };
   this.getAll = function () {
     return $http.get('/api/submissions/');
+  };
+  this.getAnalytics = function () {
+    return $http.get('/api/submissions/analytics/');
   };
 }]);

@@ -23,6 +23,7 @@ func apiMuxer(ctx *apiContext) http.Handler {
 
 	m.Get("/", apiIndex)
 	m.Get("/submissions/", apiHandler{ctx, apiGetSubmissions})
+	m.Get("/submissions/analytics/", apiHandler{ctx, apiSubmissionsGetAnalytics})
 	m.Get("/submissions/:id/", apiHandler{ctx, apiGetSubmission})
 
 	return m
@@ -62,6 +63,56 @@ func apiGetSubmission(ctx *apiContext, c web.C, w http.ResponseWriter, r *http.R
 		return
 	}
 	if err := ctx.WriteJson(w, resp.Source); err != nil {
+		w.WriteHeader(http.StatusInternalServerError)
+	}
+}
+
+func apiSubmissionsGetAnalytics(ctx *apiContext, c web.C, w http.ResponseWriter, r *http.Request) {
+	source := `{
+		"aggregations": {
+			"page_size": {
+				"terms": {
+					"field": "pdfs.page_size"
+				}
+			},
+			"pdf_version": {
+				"terms": {
+					"field": "pdfs.pdf_version"
+				}
+			},
+			"creator": {
+				"terms": {
+					"field": "pdfs.creator"
+				}
+			},
+			"producer": {
+				"terms": {
+					"field": "pdfs.producer"
+				}
+			},
+			"file_size": {
+				"range": {
+					"field": "pdfs.file_size",
+					"ranges": [
+						{ "key": "<50K", "to": 51200 },
+						{ "key": "50K-500K", "from": 51200, "to": 512000 },
+						{ "key": "500K-1M", "from": 512000, "to": 1048576 },
+						{ "key": "1M-2M", "from": 1048576, "to": 2097152 },
+						{ "key": "2M-5M", "from": 2097152, "to": 5120000 },
+						{ "key": "5M-10M", "from": 5120000, "to": 10485760 },
+						{ "key": "10M-50M", "from": 10485760, "to": 51200000 }
+					]
+				}
+			}
+		}
+	}`
+	sr, err := ctx.Search.Client.Search().Index("guggmeta").Type("submission").SearchType("count").Source(source).Do()
+	if err != nil {
+		w.WriteHeader(http.StatusInternalServerError)
+		ctx.Logger.Error("Unexpected error", "error", err)
+		return
+	}
+	if err := ctx.WriteJson(w, sr.Aggregations); err != nil {
 		w.WriteHeader(http.StatusInternalServerError)
 	}
 }
