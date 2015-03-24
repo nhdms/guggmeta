@@ -23,12 +23,67 @@ html {
 }
 
 .homepage-top {
-  height: 200px;
   background-color: #75a500;
-  color: white;
+}
+
+.homepage-top h2 {
   font-size: 48px;
-  text-align: center;
-  line-height: 200px;
+  color: white;
+  text-align: right;
+  margin-right: 20px;
+}
+
+/**
+ * Browse menu
+ */
+
+.browse-menu {
+  background-color: black;
+  margin-top: 20px;
+  text-align: left;
+  padding-bottom: 20px;
+}
+
+.browse-menu h3 {
+  color: #666;
+  font-size: 16px;
+}
+
+.browse-menu ul {
+  list-style-type: none;
+  margin: 0;
+  padding: 0;
+}
+
+.browse-menu li {
+  line-height: 30px;
+  font-size: 18px;
+  color: #ffffff;
+}
+
+.browse-menu a {
+  text-decoration: underline;
+  color: #ffffff;
+}
+
+.browse-menu a:hover,
+.browse-menu a:active,
+.browse-menu a:focus {
+  background-color: #75a500;
+}
+
+/**
+ * Header search
+ */
+
+/**
+ * Footer
+ */
+
+#footer {
+  height: 600px;
+  background-color: #eee;
+  margin-top: 40px;
 }
 
 /**
@@ -43,22 +98,22 @@ html {
  * Submission
  */
 
-.submission h2 {
+.submission-detail h2 {
   text-align: center;
   background-color: #053f63;
   color: yellow;
   padding: 10px;
 }
 
-.submission .prev img {
+.submission-detail .prev img {
   width: 100%;
 }
 
-.submission .prev:first-child img {
+.submission-detail .prev:first-child img {
   margin-bottom: 20px;
 }
 
-.submission .first-unknown {
+.submission-detail .first-unknown {
   border-top: 3px solid #ddd;
 }
 

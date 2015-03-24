@@ -1,9 +1,30 @@
-<h4>Full list</h4>
+<section class="submission-list">
 
-<table class="table table-bordered">
-  <tr ng-repeat="item in submissions">
-    <td>
-      <a href="/submissions/{{ item._id }}">{{ item._id }}</a>
-    </td>
-  </tr>
-</table>
+  <div class="row">
+
+    <div class="col-xs-12">
+      <ol class="breadcrumb">
+        <li><a href="/">Home</a></li>
+        <li class="active">Submissions</li>
+      </ol>
+    </div>
+
+  </div>
+
+  <div class="row">
+
+    <div class="col-xs-12">
+
+      <table class="table table-bordered">
+        <tr ng-repeat="item in submissions">
+          <td>
+            <a href="/submissions/{{ item._id }}">{{ item._id }}</a>
+          </td>
+        </tr>
+      </table>
+
+    </div>
+
+  </div>
+
+</section>

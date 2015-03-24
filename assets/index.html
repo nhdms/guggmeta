@@ -15,15 +15,37 @@
 
     <header role="banner" id="global-header">
       <div class="container">
-        <h1><a href="/">guggmeta</a> v0.5</h1>
+        <div class="row">
+          <div ng-class="{'col-xs-12': home, 'col-xs-12 col-sm-6': !home}">
+            <h1><a href="/">guggmeta</a> v0.5</h1>
+          </div>
+          <div ng-class="{'hidden': home, 'col-xs-12 col-sm-6': !home}">
+            <!-- TODO: Inline Search Box -->
+            <!-- TODO: Quick Links -->
+          </div>
+        </div>
       </div>
     </header>
 
     <div id="wrapper">
 
-      <header class="homepage-top">
+      <header class="homepage-top" ng-if="home">
         <div class="container">
-          Guggenheim Helsinki Design Competition
+          <div class="row">
+            <div class="col-xs-12 col-sm-8">
+              <h2>Welcome to guggmeta</h2>
+              <!-- TODO: Intro -->
+              <!-- Search Box -->
+            </div>
+            <div class="col-xs-12 col-sm-4 browse-menu">
+              <h3>Guggenheim Helsinki Design Competition</h3>
+              <ul>
+                <li><a href="/submissions">Submissions</a></li>
+                <li>Finalists: <a href="/submissions/GH-04380895">1</a>, <a href="/submissions/GH-1128435973">2</a>, <a href="/submissions/GH-121371443">3</a>, <a href="/submissions/GH-5059206475">4</a>, <a href="/submissions/GH-5631681770">5</a>, <a href="/submissions/GH-76091181">6</a></li>
+                <li><a href="/analytics">Analytics</a></li>
+              </ul>
+            </div>
+          </div>
         </div>
       </header>
 
@@ -32,6 +54,7 @@
       </main>
 
       <footer id="footer">
+        <!-- TODO: Footer Links -->
       </footer>
 
     </div>

@@ -2,13 +2,16 @@
 
 var app = angular.module('guggmeta', ['ngRoute', 'ngAria', 'ngAnimate']);
 
-app.run(function ($window) {
+app.run(['$window', '$rootScope', function ($window, $rootScope) {
   $window.onload = function () {
     try {
       console.log("Welcome!\nYou can find the source code of guggmeta in https://github.com/sevein/guggmeta.\nPlease, send me your feedback!");
     } catch (e) {}
   };
-});
+  $rootScope.$on('$routeChangeStart', function (event, next, current) {
+    $rootScope.home = next.$$route.originalPath === '/';
+  });
+}]);
 
 app.config(['$routeProvider', '$locationProvider', function ($routeProvider, $locationProvider) {
   $routeProvider
@@ -48,7 +51,6 @@ app.controller('SubmissionDetailCtrl', ['$scope', '$routeParams', 'SubmissionSer
   });
   // Properties "file_name" and "author" are ignored or handled manually
   $scope.submissionFields = [
-    { 'label': 'Size', 'property': 'size' },
     { 'label': 'Creation date', 'property': 'creation_date' },
     { 'label': 'Creator', 'property': 'creator' },
     { 'label': 'Encrypted', 'property': 'encrypted' },
