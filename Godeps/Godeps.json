@@ -11,8 +11,8 @@
 		},
 		{
 			"ImportPath": "github.com/olivere/elastic",
-			"Comment": "v1-15-g289cc82",
-			"Rev": "289cc82ceb395193bfb53c195a957ee815dbd315"
+			"Comment": "v1-34-g516d021",
+			"Rev": "516d0219281a710ec717d131f43bbdfa18a9cc82"
 		},
 		{
 			"ImportPath": "github.com/rs/cors",
