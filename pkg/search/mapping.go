@@ -14,6 +14,7 @@ var submissionTypeProperties = `{
 	"keywords":        { "type": "string",  "store": true, "index": "not_analyzed" },
 	"form":            { "type": "string",  "store": true, "index": "not_analyzed" },
 	"page_size":       { "type": "string",  "store": true, "index": "not_analyzed" },
+	"pdf_version":     { "type": "string",  "store": true, "index": "not_analyzed" },
 	"creation_date":   { "type": "date",    "store": true },
 	"mod_date":        { "type": "date",    "store": true },
 	"file_size":       { "type": "long",    "store": true },
@@ -24,8 +25,7 @@ var submissionTypeProperties = `{
 	"user_properties": { "type": "boolean", "store": true },
 	"suspects":        { "type": "boolean", "store": true },
 	"javascript":      { "type": "boolean", "store": true },
-	"optimized":       { "type": "boolean", "store": true },
-	"pdf_version":     { "type": "float",   "store": true }
+	"optimized":       { "type": "boolean", "store": true }
 }`
 
 var mappings = map[string]string{

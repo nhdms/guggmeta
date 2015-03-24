@@ -33,7 +33,7 @@ type Document struct {
 	PageRot        int16     `json:"page_rot,omitempty"`
 	PageSize       string    `json:"page_size,omitempty"`
 	Pages          int16     `json:"pages,omitempty"`
-	PdfVersion     float32   `json:"pdf_version,omitempty"`
+	PdfVersion     string    `json:"pdf_version,omitempty"`
 	Producer       string    `json:"producer,omitempty"`
 	Subject        string    `json:"subject,omitempty"`
 	Suspects       bool      `json:"suspects"`
@@ -131,9 +131,7 @@ func Parse(path string) (*Document, error) {
 		case "Optimized":
 			p.Optimized = parseBool(v)
 		case "PDF version":
-			if t, err := strconv.ParseFloat(v, 32); err == nil {
-				p.PdfVersion = float32(t)
-			}
+			p.PdfVersion = v
 		}
 	}
 
