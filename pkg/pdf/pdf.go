@@ -103,10 +103,10 @@ func Parse(path string) (*Document, error) {
 		case "Suspects":
 			p.Suspects = parseBool(v)
 		case "Form":
-			// Examples: "none", "AcroForm", "XFA"
-			if v != "none" {
-				p.Form = v
+			if v == "none" {
+				v = "None"
 			}
+			p.Form = v
 		case "JavaScript":
 			p.JavaScript = parseBool(v)
 		case "Pages":
