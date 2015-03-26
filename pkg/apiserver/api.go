@@ -23,7 +23,8 @@ func apiMuxer(ctx *apiContext) http.Handler {
 
 	m.Get("/", apiIndex)
 	m.Get("/submissions/", apiHandler{ctx, apiGetSubmissions})
-	m.Get("/submissions/analytics/", apiHandler{ctx, apiSubmissionsGetAnalytics})
+	m.Get("/submissions/analytics/", apiHandler{ctx, apiGetSubmissionsAnalytics})
+	m.Get("/submissions/search/", apiHandler{ctx, apiGetSubmissionsSearch})
 	m.Get("/submissions/:id/", apiHandler{ctx, apiGetSubmission})
 
 	return m
@@ -45,7 +46,7 @@ func apiGetSubmissions(ctx *apiContext, c web.C, w http.ResponseWriter, r *http.
 		ctx.Logger.Error("Unexpected error", "error", err)
 		return
 	}
-	if err := ctx.WriteJson(w, NewApiListResponse(sr)); err != nil {
+	if err := ctx.WriteJson(w, NewApiSearchResponse(sr)); err != nil {
 		w.WriteHeader(http.StatusInternalServerError)
 	}
 }
@@ -67,7 +68,7 @@ func apiGetSubmission(ctx *apiContext, c web.C, w http.ResponseWriter, r *http.R
 	}
 }
 
-func apiSubmissionsGetAnalytics(ctx *apiContext, c web.C, w http.ResponseWriter, r *http.Request) {
+func apiGetSubmissionsAnalytics(ctx *apiContext, c web.C, w http.ResponseWriter, r *http.Request) {
 	source := `{
 		"aggregations": {
 			"page_size": {
@@ -113,6 +114,33 @@ func apiSubmissionsGetAnalytics(ctx *apiContext, c web.C, w http.ResponseWriter,
 		return
 	}
 	if err := ctx.WriteJson(w, sr.Aggregations); err != nil {
+		w.WriteHeader(http.StatusInternalServerError)
+	}
+}
+
+func apiGetSubmissionsSearch(ctx *apiContext, c web.C, w http.ResponseWriter, r *http.Request) {
+	const size = 25
+	var from int = 0
+	if p := r.URL.Query().Get("p"); p != "" {
+		if page, err := strconv.ParseInt(p, 10, 16); err == nil && page > 1 {
+			from = (int(page) - 1) * size
+		}
+		fmt.Println(from)
+	}
+	fields := []string{"_id"}
+	var query elastic.Query
+	if q := r.URL.Query().Get("q"); q != "" {
+		query = elastic.NewMatchQuery("pdfs.content", q).Operator("or")
+	} else {
+		query = elastic.NewMatchAllQuery()
+	}
+	sr, err := ctx.Search.Client.Search().Index("guggmeta").Type("submission").Fields(fields...).From(from).Size(size).Query(query).Do()
+	if err != nil {
+		w.WriteHeader(http.StatusInternalServerError)
+		ctx.Logger.Error("Unexpected error", "error", err)
+		return
+	}
+	if err := ctx.WriteJson(w, NewApiSearchResponse(sr)); err != nil {
 		w.WriteHeader(http.StatusInternalServerError)
 	}
 }
@@ -206,21 +234,21 @@ func rangedSearch(q elastic.Query, index string, fields []string, orders []strin
 	return sr, err
 }
 
-type ApiListResponse struct {
-	Results []ApiHit `json:"results"`
-	Total   int64    `json:"total"`
+type ApiSearchResponse struct {
+	Results []ApiSearchHit `json:"results"`
+	Total   int64          `json:"total"`
 }
 
-type ApiHit map[string]interface{}
+type ApiSearchHit map[string]interface{}
 
-func NewApiListResponse(sr *elastic.SearchResult) *ApiListResponse {
-	r := &ApiListResponse{
-		Results: []ApiHit{},
+func NewApiSearchResponse(sr *elastic.SearchResult) *ApiSearchResponse {
+	r := ApiSearchResponse{
+		Results: []ApiSearchHit{},
 		Total:   sr.Hits.TotalHits,
 	}
 	for _, hit := range sr.Hits.Hits {
-		ah := ApiHit(hit.Fields)
+		ah := ApiSearchHit(hit.Fields)
 		r.Results = append(r.Results, ah)
 	}
-	return r
+	return &r
 }
