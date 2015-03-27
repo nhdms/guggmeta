@@ -125,7 +125,6 @@ func apiGetSubmissionsSearch(ctx *apiContext, c web.C, w http.ResponseWriter, r 
 		if page, err := strconv.ParseInt(p, 10, 16); err == nil && page > 1 {
 			from = (int(page) - 1) * size
 		}
-		fmt.Println(from)
 	}
 	fields := []string{"_id"}
 	var query elastic.Query
