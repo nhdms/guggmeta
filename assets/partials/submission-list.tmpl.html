@@ -15,13 +15,24 @@
 
     <div class="col-xs-12">
 
-      <table class="table table-bordered">
-        <tr ng-repeat="item in submissions">
-          <td>
-            <a href="/submissions/{{ item._id }}">{{ item._id }}</a>
-          </td>
-        </tr>
-      </table>
+      <div class="results" ng-if="submissions.length">
+        <p>
+          Total results: {{ totalItems }}
+          <span ng-if="query"><br />Your search: "{{ query }}" (<a href="/submissions">delete</a>)</span>
+        </p>
+        <table class="table table-bordered">
+          <tr ng-repeat="item in submissions">
+            <td>
+              <a href="/submissions/{{ item._id }}">{{ item._id }}</a>
+            </td>
+          </tr>
+        </table>
+        <pagination ng-model="currentPage" total-items="totalItems" boundary-links="true" items-per-page="itemsPerPage" num-pages="numPages" ng-change="pageChanged()"></pagination>
+      </div>
+
+      <div class="no-results" ng-if="!submissions.length">
+        No results. Try searching something else, e.g. "<a href="/submissions?q=water">Water</a>".
+      </div>
 
     </div>
 

@@ -8,23 +8,34 @@
     <title>guggmeta</title>
     <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=RobotoDraft:400,500,700,400italic">
     <link rel="stylesheet" href="/assets/bower_components/bootstrap/dist/css/bootstrap.min.css">
+    <link rel="stylesheet" href="/assets/bower_components/angular-loading-bar/build/loading-bar.min.css">
     <link rel="stylesheet" href="/assets/style.css">
     <style>[ng-cloak] { display: none; }</style>
   </head>
   <body>
 
-    <header role="banner" id="global-header">
-      <div class="container">
-        <div class="row">
-          <div ng-class="{'col-xs-12': home, 'col-xs-12 col-sm-6': !home}">
-            <h1><a href="/">guggmeta</a> v0.5</h1>
+    <header id="global-header" ng-controller="HeaderCtrl">
+      <nav class="navbar navbar-default navbar-inverse navbar-static-top" role="navigation">
+        <div class="container">
+          <div class="navbar-header">
+            <a class="navbar-brand" href="/">guggmeta v0.5</a>
           </div>
-          <div ng-class="{'hidden': home, 'col-xs-12 col-sm-6': !home}">
-            <!-- TODO: Inline Search Box -->
-            <!-- TODO: Quick Links -->
-          </div>
+          <form  ng-if="!home" class="navbar-form navbar-right" role="search" name="form" ng-submit="search()">
+            <div class="input-group">
+              <input type="text" class="form-control" placeholder="Search" name="query" ng-model="query">
+              <div class="input-group-btn">
+                <button class="btn btn-default" type="submit" aria-label="Search">
+                  <span class="glyphicon glyphicon-search" aria-hidden="true"></span>
+                </button>
+                <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown" aria-expanded="false">
+                  <span class="caret"></span>
+                  <span class="sr-only">Toggle Dropdown</span>
+                </button>
+              </span>
+            </div>
+          </form>
         </div>
-      </div>
+      </nav>
     </header>
 
     <div id="wrapper">
@@ -50,11 +61,15 @@
       </header>
 
       <main id="content" class="container">
-        <div ng-view></div>
+        <div ng-view autoscroll></div>
       </main>
 
       <footer id="footer">
-        <!-- TODO: Footer Links -->
+        <div class="row">
+          <div class="col-xs-12 wrapper">
+            <a href="https://github.com/sevein">@sevein</a>
+          </div>
+        </div>
       </footer>
 
     </div>
@@ -63,6 +78,8 @@
     <script src="/assets/bower_components/angular-animate/angular-animate.min.js"></script>
     <script src="/assets/bower_components/angular-aria/angular-aria.min.js"></script>
     <script src="/assets/bower_components/angular-route/angular-route.min.js"></script>
+    <script src="/assets/bower_components/angular-loading-bar/build/loading-bar.min.js"></script>
     <script src="/assets/app.js"></script>
+    <script src="/assets/vendor/ui-bootstrap-pagination/ui-bootstrap-pagination.js"></script>
   </body>
 </html>

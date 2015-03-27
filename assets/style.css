@@ -1,3 +1,7 @@
+/**
+ * Primary color: #75a500
+ */
+
 html {
   font-family: 'RobotoDraft';
 }
@@ -6,21 +10,29 @@ html {
  * Header
  */
 
-#global-header {
-  background-color: black;
+#global-header .navbar {
+  margin-bottom: 0;
 }
 
-#global-header h1 {
-  margin: 0;
-  padding: 10px;
-  font-size: 30px;
-  text-rendering: optimizeLegibility;
+#global-header .navbar-form {
+  margin-top: 10px;
 }
 
-#global-header a {
-  margin: 0;
-  color: #fff;
+#global-header input[type=text],
+#global-header .btn {
+  border: 0;
+  border-radius: 0;
+  height: 32px;
 }
+
+#global-header .btn {
+  background-color: #75a500;
+  color: white;
+}
+
+/**
+ * Homepage top
+ */
 
 .homepage-top {
   background-color: #75a500;
@@ -81,9 +93,19 @@ html {
  */
 
 #footer {
-  height: 600px;
+  height: 200px;
   background-color: #eee;
   margin-top: 40px;
+}
+
+#footer .wrapper {
+  text-align: center;
+}
+
+#footer a {
+  line-height: 200px;
+  font-size: 30px;
+  color: #bbb;
 }
 
 /**
