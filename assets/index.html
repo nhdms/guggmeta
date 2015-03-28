@@ -20,7 +20,7 @@
           <div class="navbar-header">
             <a class="navbar-brand" href="/">guggmeta v0.5</a>
           </div>
-          <form  ng-if="!home" class="navbar-form navbar-right" role="search" name="form" ng-submit="search()">
+          <form ng-show="!home" class="navbar-form navbar-right" role="search" name="form" ng-submit="search()">
             <div class="input-group">
               <input type="text" class="form-control" placeholder="Search" name="query" ng-model="query">
               <div class="input-group-btn">

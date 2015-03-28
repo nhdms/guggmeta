@@ -117,6 +117,14 @@ html {
 }
 
 /**
+ * Search
+ */
+
+.search-result em {
+  background-color: yellow;
+}
+
+/**
  * Submission
  */
 

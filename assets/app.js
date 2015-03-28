@@ -1,6 +1,6 @@
 'use strict';
 
-var app = angular.module('guggmeta', ['ngRoute', 'ngAria', 'ngAnimate', 'ui.bootstrap.pagination', 'angular-loading-bar']);
+var app = angular.module('guggmeta', ['ngRoute', 'ngAnimate', 'ui.bootstrap.pagination', 'angular-loading-bar']);
 
 app.run(['$window', '$rootScope', function ($window, $rootScope) {
   $window.onload = function () {
@@ -89,19 +89,23 @@ app.controller('AnalyticsListCtrl', ['$scope', 'SubmissionService', function ($s
   });
 }]);
 
-app.controller('SubmissionListCtrl', ['$scope', '$location', 'response', 'SubmissionService', function ($scope, $location, response, SubmissionService) {
+app.controller('SubmissionListCtrl', ['$scope', '$location', '$sce', 'response', 'SubmissionService', function ($scope, $location, $sce, response, SubmissionService) {
   var params = $location.search();
   $scope.query = params.hasOwnProperty('q') ? params.q : undefined;
+  $scope.pager = { currentPage: 1, itemsPerPage: 25 }
   var populate = function (resp) {
     $scope.submissions = resp.data.results;
     $scope.totalItems = resp.data.total;
   };
   populate(response);
   $scope.pageChanged = function () {
-    SubmissionService.search($scope.query, $scope.currentPage).then(function (response) {
+    SubmissionService.search($scope.query, $scope.pager.currentPage).then(function (response) {
       populate(response);
       $scope.top();
     });
+  };
+  $scope.getHighlight = function (content) {
+    return $sce.trustAsHtml(content);
   };
 }]);
 

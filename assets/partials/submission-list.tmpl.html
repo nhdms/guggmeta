@@ -21,13 +21,15 @@
           <span ng-if="query"><br />Your search: "{{ query }}" (<a href="/submissions">delete</a>)</span>
         </p>
         <table class="table table-bordered">
-          <tr ng-repeat="item in submissions">
+          <tr ng-repeat="item in submissions" class="search-result">
             <td>
+              <a href="/submissions/{{ item._id }}"><img ng-src="http://a5.designguggenheimhelsinki.org/{{ item._id }}-partC1.jpg"/></a>
               <a href="/submissions/{{ item._id }}">{{ item._id }}</a>
             </td>
+            <td ng-bind-html="getHighlight(item.highlight['pdfs.content'][0])"></td>
           </tr>
         </table>
-        <pagination ng-model="currentPage" total-items="totalItems" boundary-links="true" items-per-page="itemsPerPage" num-pages="numPages" ng-change="pageChanged()"></pagination>
+        <pagination total-items="totalItems" items-per-page="{{ pager.itemsPerPage }}" ng-model="pager.currentPage" ng-change="pageChanged()"></pagination>
       </div>
 
       <div class="no-results" ng-if="!submissions.length">

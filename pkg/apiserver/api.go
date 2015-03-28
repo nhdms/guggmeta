@@ -133,7 +133,9 @@ func apiGetSubmissionsSearch(ctx *apiContext, c web.C, w http.ResponseWriter, r 
 	} else {
 		query = elastic.NewMatchAllQuery()
 	}
-	sr, err := ctx.Search.Client.Search().Index("guggmeta").Type("submission").Fields(fields...).From(from).Size(size).Query(query).Do()
+	hlf := elastic.NewHighlighterField("pdfs.content").NumOfFragments(1).Options(map[string]interface{}{"index_options": "offsets"})
+	hl := elastic.NewHighlight().Fields(hlf)
+	sr, err := ctx.Search.Client.Search().Index("guggmeta").Type("submission").Highlight(hl).Fields(fields...).From(from).Size(size).Query(query).Do()
 	if err != nil {
 		w.WriteHeader(http.StatusInternalServerError)
 		ctx.Logger.Error("Unexpected error", "error", err)
@@ -247,6 +249,7 @@ func NewApiSearchResponse(sr *elastic.SearchResult) *ApiSearchResponse {
 	}
 	for _, hit := range sr.Hits.Hits {
 		ah := ApiSearchHit(hit.Fields)
+		ah["highlight"] = hit.Highlight
 		r.Results = append(r.Results, ah)
 	}
 	return &r
