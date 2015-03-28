@@ -25,7 +25,12 @@ app.config(['$routeProvider', '$locationProvider', function ($routeProvider, $lo
     })
     .when('/analytics', {
       templateUrl: '/assets/partials/analytics-list.tmpl.html',
-      controller: 'AnalyticsListCtrl'
+      controller: 'AnalyticsListCtrl',
+      resolve: {
+        response: ['SubmissionService', function (SubmissionService) {
+          return SubmissionService.getAnalytics();
+        }]
+      }
     })
     .when('/submissions', {
       templateUrl: '/assets/partials/submission-list.tmpl.html',
@@ -108,16 +113,14 @@ app.controller('HomeCtrl', [function () {
 
 }]);
 
-app.controller('AnalyticsListCtrl', ['$scope', 'SubmissionService', function ($scope, SubmissionService) {
-  SubmissionService.getAnalytics().then(function (response) {
-    $scope.analytics = response.data;
-  });
+app.controller('AnalyticsListCtrl', ['$scope', 'response', function ($scope, response) {
+  $scope.analytics = response.data;
 }]);
 
 app.controller('SubmissionListCtrl', ['$scope', '$location', '$sce', 'response', 'SubmissionService', function ($scope, $location, $sce, response, SubmissionService) {
   var params = $location.search();
   $scope.query = params.hasOwnProperty('q') ? params.q : undefined;
-  $scope.pager = { currentPage: 1, itemsPerPage: 10 }
+  $scope.pager = { currentPage: 1, itemsPerPage: 10, maxSize: 5 }
   var populate = function (resp) {
     $scope.totalItems = resp.data.total;
     $scope.submissions = [];
