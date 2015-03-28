@@ -63,8 +63,9 @@ body.popup {
   border-radius: 0;
   border-width: 0;
   height: 32px;
-  box-shadow: 0;
   font-size: 18px;
+  box-shadow: none;
+  -webkit-box-shadow: none;
 }
 
 /**
@@ -120,7 +121,7 @@ body.popup {
   margin-top: 40px;
 }
 
-#footer .wrapper {
+#footer .container {
   text-align: center;
 }
 
@@ -214,14 +215,19 @@ body.popup {
  */
 
 .results-summary {
-  border: 4px solid #75a500;
-  background-color: #f5f5f5;
   margin-bottom: 20px;
 }
 
 @media (max-width: 767px) {
   .results-summary {
     border-width: 4px 0;
+  }
+  .total {
+    margin-top: 20px;
+    text-align: center !important;
+  }
+  .text {
+    font-size: 14px !important;
   }
 }
 
@@ -262,6 +268,15 @@ body.popup {
   .results-summary .total {
     text-align: left;
   }
+}
+
+.results-summary .no-matches {
+  font-weight: 300;
+  color: #75a500;
+}
+
+.results-summary .cu-page {
+  font-weight: 700;
 }
 
 /**
@@ -343,23 +358,36 @@ body.popup {
 
 .breadcrumb {
   border-radius: 0;
+  border: 4px solid #75a500;
+}
+
+@media (max-width: 767px) {
+  .breadcrumb {
+    border-width: 0;
+    margin-top: -20px;
+  }
 }
 
 /**
  * Pagination
  */
 
-.pagination>li>a,
-.pagination>li>span {
+.pagination a,
+.pagination span {
+  border-radius: 0 !important;
+}
+
+.pagination > li > a,
+.pagination > li > span {
   color: #75a500;
 }
 
-.pagination>.active>a,
-.pagination>.active>a:focus,
-.pagination>.active>a:hover,
-.pagination>.active>span,
-.pagination>.active>span:focus,
-.pagination>.active>span:hover {
+.pagination > .active > a,
+.pagination > .active > a:focus,
+.pagination > .active > a:hover,
+.pagination > .active > span,
+.pagination > .active > span:focus,
+.pagination > .active > span:hover {
   background-color: #75a500;
   border-color: #75a500;
 }

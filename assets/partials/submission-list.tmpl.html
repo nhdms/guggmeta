@@ -26,7 +26,8 @@
               </span>
             </div>
             <div class="col-xs-12 col-sm-6 total">
-              <span>{{ totalItems }} matches</span>
+              <span class="no-matches">{{ totalItems }} matches</span>
+              <span class="cu-page">Page {{ pager.currentPage }} of 14</span>
             </div>
           </div>
         </div>
@@ -37,7 +38,7 @@
 
             <div class="facets">
               <!-- TODO: Facets -->
-              <h4>1,715 submissions</h4>
+              <h4 class="hidden-xs">1,715 submissions</h4>
             </div>
 
           </div>
@@ -57,7 +58,9 @@
               </div>
             </div>
 
-            <pagination total-items="totalItems" items-per-page="{{ pager.itemsPerPage }}" boundary-links="true" max-size="{{ pager.maxSize }}" ng-model="pager.currentPage" rotate="false" ng-change="pageChanged()"></pagination>
+            <div class="text-center">
+              <pagination total-items="totalItems" items-per-page="{{ pager.itemsPerPage }}" boundary-links="true" max-size="{{ pager.maxSize }}" ng-model="pager.currentPage" rotate="false" ng-change="pageChanged()"></pagination>
+            </div>
 
           </div>
         </div>
