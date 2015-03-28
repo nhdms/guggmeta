@@ -86,7 +86,25 @@ app.controller('HeaderCtrl', ['$scope', '$location', '$window', function ($scope
   });
 }]);
 
-app.controller('HomeCtrl', ['$scope', function ($scope) {
+app.controller('HomepageTopCtrl', ['$scope', '$location', '$window', function ($scope, $location, $window) {
+  $scope.form = {};
+  $scope.search = function () {
+    if (angular.isUndefined($scope.query)) {
+      return;
+    }
+    if (!$scope.query.length) {
+      $location.path('/submissions');
+      return;
+    }
+    if (/GH-\d/.test($scope.query)) {
+      $location.path('/submissions/' + $scope.query);
+      return;
+    }
+    $location.path('/submissions').search({ 'q': $scope.query });
+  };
+}]);
+
+app.controller('HomeCtrl', [function () {
 
 }]);
 

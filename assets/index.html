@@ -35,7 +35,7 @@
                   <span class="sr-only">Toggle Dropdown</span>
                 </button>
                 -->
-              </span>
+              </div>
             </div>
           </form>
         </div>
@@ -44,13 +44,21 @@
 
     <div id="wrapper">
 
-      <header class="homepage-top" ng-if="home">
+      <header class="homepage-top" ng-if="home" ng-controller="HomepageTopCtrl">
         <div class="container">
           <div class="row">
             <div class="col-xs-12 col-sm-8">
               <h2>Welcome to guggmeta</h2>
-              <!-- TODO: Intro -->
-              <!-- Search Box -->
+              <form role="search" name="form" ng-submit="search()" class="clearfix">
+                <div class="input-group">
+                  <input type="text" class="form-control" placeholder="Search" name="query" ng-model="query">
+                  <div class="input-group-btn">
+                    <button class="btn btn-default" type="submit" aria-label="Search">
+                      <span class="glyphicon glyphicon-search" aria-hidden="true"></span>
+                    </button>
+                  </div>
+                </div>
+              </form>
             </div>
             <div class="col-xs-12 col-sm-4 browse-menu">
               <h3>Guggenheim Helsinki Design Competition</h3>
