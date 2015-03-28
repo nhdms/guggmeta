@@ -27,7 +27,7 @@
             </div>
             <div class="col-xs-12 col-sm-6 total">
               <span class="no-matches">{{ totalItems }} matches</span>
-              <span class="cu-page">Page {{ pager.currentPage }} of 14</span>
+              <span class="cu-page">Page {{ pager.currentPage }} of {{ numPages }}</span>
             </div>
           </div>
         </div>
@@ -70,7 +70,7 @@
             </div>
 
             <div class="text-center">
-              <pagination total-items="totalItems" items-per-page="{{ pager.itemsPerPage }}" boundary-links="true" max-size="{{ pager.maxSize }}" ng-model="pager.currentPage" rotate="false" ng-change="pageChanged()"></pagination>
+              <pagination total-items="totalItems" items-per-page="{{ pager.itemsPerPage }}" boundary-links="true" max-size="{{ pager.maxSize }}" ng-model="pager.currentPage" rotate="false" ng-change="pageChanged()" num-pages="numPages"></pagination>
             </div>
 
           </div>
