@@ -12,13 +12,15 @@
     <link rel="stylesheet" href="/assets/style.css">
     <style>[ng-cloak] { display: none; }</style>
   </head>
-  <body>
+  <body ng-class="{ popup: popup }">
 
     <header id="global-header" ng-controller="HeaderCtrl">
       <nav class="navbar navbar-default navbar-inverse navbar-static-top" role="navigation">
         <div class="container">
           <div class="navbar-header">
-            <a class="navbar-brand" href="/">guggmeta v0.5</a>
+            <a class="navbar-brand" href="/">
+              <img src="/assets/logo.png" srcset="/assets/logo.png 1x, /assets/logo.2x.png 2x" alt="guggmeta logo">
+            </a>
           </div>
           <form ng-show="!home" class="navbar-form navbar-right" role="search" name="form" ng-submit="search()">
             <div class="input-group">
@@ -27,10 +29,12 @@
                 <button class="btn btn-default" type="submit" aria-label="Search">
                   <span class="glyphicon glyphicon-search" aria-hidden="true"></span>
                 </button>
+                <!--
                 <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown" aria-expanded="false">
                   <span class="caret"></span>
                   <span class="sr-only">Toggle Dropdown</span>
                 </button>
+                -->
               </span>
             </div>
           </form>
@@ -67,7 +71,7 @@
       <footer id="footer">
         <div class="row">
           <div class="col-xs-12 wrapper">
-            <a href="https://github.com/sevein">@sevein</a>
+            <a href="https://github.com/sevein/guggmeta">guggmeta</a>
           </div>
         </div>
       </footer>

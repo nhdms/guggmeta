@@ -77,6 +77,13 @@ app.controller('HeaderCtrl', ['$scope', '$location', '$window', function ($scope
     $window.alert('Not found!');
     delete $scope.query;
   });
+  $scope.$on('$routeChangeSuccess', function (event, current, previous) {
+    if ($location.path() !== '/submissions') {
+      delete $scope.query;
+    } else {
+      $scope.query = $location.search()['q'];
+    }
+  });
 }]);
 
 app.controller('HomeCtrl', ['$scope', function ($scope) {
@@ -92,10 +99,18 @@ app.controller('AnalyticsListCtrl', ['$scope', 'SubmissionService', function ($s
 app.controller('SubmissionListCtrl', ['$scope', '$location', '$sce', 'response', 'SubmissionService', function ($scope, $location, $sce, response, SubmissionService) {
   var params = $location.search();
   $scope.query = params.hasOwnProperty('q') ? params.q : undefined;
-  $scope.pager = { currentPage: 1, itemsPerPage: 25 }
+  $scope.pager = { currentPage: 1, itemsPerPage: 10 }
   var populate = function (resp) {
-    $scope.submissions = resp.data.results;
     $scope.totalItems = resp.data.total;
+    $scope.submissions = [];
+    var length = resp.data.results.length;
+    for (var i = 0; i < length; i++) {
+      var tuple = resp.data.results[i];
+      if (angular.isDefined(tuple.highlight) && tuple.highlight !== null) {
+        tuple.highlight = $sce.trustAsHtml('[...] ' + tuple.highlight['pdfs.content'][0])
+      }
+      $scope.submissions.push(tuple);
+    }
   };
   populate(response);
   $scope.pageChanged = function () {
@@ -104,12 +119,9 @@ app.controller('SubmissionListCtrl', ['$scope', '$location', '$sce', 'response',
       $scope.top();
     });
   };
-  $scope.getHighlight = function (content) {
-    return $sce.trustAsHtml(content);
-  };
 }]);
 
-app.controller('SubmissionDetailCtrl', ['$scope', '$routeParams', 'response', function ($scope, $routeParams, response) {
+app.controller('SubmissionDetailCtrl', ['$rootScope', '$scope', '$routeParams', 'response', function ($rootScope, $scope, $routeParams, response) {
   $scope.id = $routeParams.id;
   $scope.submission = response.data;
   // Properties "file_name" and "author" are ignored or handled manually
@@ -134,6 +146,14 @@ app.controller('SubmissionDetailCtrl', ['$scope', '$routeParams', 'response', fu
     { 'label': 'Title', 'property': 'title' },
     { 'label': 'UserProperties', 'property': 'user_properties' },
   ];
+  $scope.open = function (item) {
+    item.preview = true;
+    $rootScope.popup = true;
+  }
+  $scope.close = function (item) {
+    item.preview = false;
+    $rootScope.popup = false;
+  }
 }]);
 
 app.service('SubmissionService', ['$http', function ($http) {

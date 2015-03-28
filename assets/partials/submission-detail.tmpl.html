@@ -44,6 +44,21 @@
                 <span class="hidden-field">&lthidden&gt</span>
               </td>
             </tr>
+            <tr>
+              <td class="name">Content</td>
+              <td>
+                <a href="#" ng-click="open(item)" class="btn btn-default btn-sm">Open</a>
+                <div class="text-preview" ng-show="item.preview">
+                  <div class="top-bar clearfix">
+                    <h4>{{ id }} &raquo; PDF {{ item.type }}</h4>
+                    <button class="btn btn-default btn-large" ng-click="close(item)">Close</button>
+                  </div>
+                  <div class="text">
+                    <pre>{{ item.content }}</pre>
+                  </div>
+                </div>
+              </td>
+            </tr>
             <tr ng-if="item[f.property]" ng-repeat="f in submissionFields">
               <td class="name">{{ f.label }}</td>
               <td ng-switch="f.property">

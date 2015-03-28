@@ -16,20 +16,51 @@
     <div class="col-xs-12">
 
       <div class="results" ng-if="submissions.length">
-        <p>
-          Total results: {{ totalItems }}
-          <span ng-if="query"><br />Your search: "{{ query }}" (<a href="/submissions">delete</a>)</span>
-        </p>
-        <table class="table table-bordered">
-          <tr ng-repeat="item in submissions" class="search-result">
-            <td>
-              <a href="/submissions/{{ item._id }}"><img ng-src="http://a5.designguggenheimhelsinki.org/{{ item._id }}-partC1.jpg"/></a>
-              <a href="/submissions/{{ item._id }}">{{ item._id }}</a>
-            </td>
-            <td ng-bind-html="getHighlight(item.highlight['pdfs.content'][0])"></td>
-          </tr>
-        </table>
-        <pagination total-items="totalItems" items-per-page="{{ pager.itemsPerPage }}" ng-model="pager.currentPage" ng-change="pageChanged()"></pagination>
+
+        <div class="results-summary">
+          <div class="row">
+            <div class="col-xs-12 col-sm-6">
+              <span ng-if="query" class="input-group">
+                Your search <em>{{ query }}</em>
+                <a class="remove glyphicon glyphicon-remove" href="/submissions"></a>
+              </span>
+            </div>
+            <div class="col-xs-12 col-sm-6 total">
+              <span>{{ totalItems }} matches</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="row">
+
+          <div class="col-xs-12 col-md-3">
+
+            <div class="facets">
+              <!-- TODO: Facets -->
+              <h4>1,715 submissions</h4>
+            </div>
+
+          </div>
+
+          <div class="col-xs-12 col-md-9">
+
+            <div ng-repeat="item in submissions">
+              <div class="search-result">
+                <a href="/submissions/{{ item._id }}" class="title"><h4>{{ item._id }}</h4></a>
+                <div class="c clearfix">
+                  <a href="/submissions/{{ item._id }}" class="thumbnail"><img ng-src="http://a5.designguggenheimhelsinki.org/{{ item._id }}-partC1.jpg"/></a>
+                  <div class="text" ng-bind-html="item.highlight"></div>
+                </div>
+                <div class="actions">
+                  <a class="btn btn-default" href="/submissions/{{ item._id }}">Open</a>
+                </div>
+              </div>
+            </div>
+
+            <pagination total-items="totalItems" items-per-page="{{ pager.itemsPerPage }}" ng-model="pager.currentPage" ng-change="pageChanged()"></pagination>
+
+          </div>
+        </div>
       </div>
 
       <div class="no-results" ng-if="!submissions.length">

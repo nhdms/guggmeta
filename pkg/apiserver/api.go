@@ -119,7 +119,7 @@ func apiGetSubmissionsAnalytics(ctx *apiContext, c web.C, w http.ResponseWriter,
 }
 
 func apiGetSubmissionsSearch(ctx *apiContext, c web.C, w http.ResponseWriter, r *http.Request) {
-	const size = 25
+	const size = 10
 	var from int = 0
 	if p := r.URL.Query().Get("p"); p != "" {
 		if page, err := strconv.ParseInt(p, 10, 16); err == nil && page > 1 {
