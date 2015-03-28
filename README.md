@@ -1,5 +1,7 @@
 # guggmeta
 
+Try the demo: http://guggmeta.sevein.com/
+
 Welcome to guggmeta! This is one of the [projects](https://github.com/Guggenheim-Helsinki/Data-API/wiki/List-of-projects-created-with-the-Data-API) created with the [Data API](https://github.com/Guggenheim-Helsinki/Data-API) published by [Guggenheim Helsinki Design Competition](http://designguggenheimhelsinki.org/). The main goal of guggmeta is to expose the metadata left behind the PDF documents that were included in the 1,715 anonymous submissions.
 
 **gugmeta is still in development**. I will add more features. I will likely refactor some parts of the application and make lots of changes that will not be noticed by the users. I will probably get bored at some point and abandon it.
