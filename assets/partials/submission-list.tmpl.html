@@ -47,10 +47,21 @@
 
             <div ng-repeat="item in submissions">
               <div class="search-result">
-                <a href="/submissions/{{ item._id }}" class="title"><h4>{{ item._id }}</h4></a>
+                <a href="/submissions/{{ item._id }}" class="title">
+                  <h4>
+                    {{ item._id }}
+                    <span ng-if="item.honorable" class="label label-honorable">Honorable</span>
+                    <span ng-if="item.finalist" class="label label-finalist">Finalist</span>
+                    <span ng-if="item.winner" class="label label-winner">Winner</span>
+                  </h4>
+                </a>
                 <div class="c clearfix">
                   <a href="/submissions/{{ item._id }}" class="thumbnail"><img ng-src="http://a5.designguggenheimhelsinki.org/{{ item._id }}-partC1.jpg"/></a>
-                  <div class="text" ng-bind-html="item.highlight"></div>
+                  <div ng-if="item.highlight" class="text">
+                    <div ng-bind-html="item.highlight"></div>
+                    <hr />
+                  </div>
+                  <div ng-if="!item.query" class="text" ng-bind-html="item.summary"></div>
                 </div>
                 <div class="actions">
                   <a class="btn btn-default" href="/submissions/{{ item._id }}">Open</a>

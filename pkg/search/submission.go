@@ -11,8 +11,12 @@ import (
 // Submission represents a competition entry. This is the object that we are
 // encoding to JSON and sending to Elasticsearch.
 type Submission struct {
-	Id   string    `json:"_id"`
-	Pdfs []PdfPart `json:"pdfs,omitempty"`
+	Id        string    `json:"_id"`
+	Summary   string    `json:"summary,omitempty"`
+	Finalist  bool      `json:"finalist"`
+	Winner    bool      `json:"winner"`
+	Honorable bool      `json:"honorable"`
+	Pdfs      []PdfPart `json:"pdfs,omitempty"`
 }
 
 // PdfPart represents a PDF document in a submission.
@@ -35,13 +39,32 @@ var pdfParts map[string]map[string]string = map[string]map[string]string{
 
 const SubmissionType = "submission"
 
+var finalists = [6]string{
+	"GH-04380895",
+	"GH-1128435973",
+	"GH-121371443",
+	"GH-5059206475",
+	"GH-5631681770",
+	"GH-76091181",
+}
+
 // NewSubmission takes the ID of a given submission and its path in the
 // filesystem and returns a Submission object containing its metadata,
 // including the details found inside the different PDF parts.
 func NewSubmission(id string, path string) (*Submission, error) {
 	s := &Submission{
-		Id:   id,
-		Pdfs: make([]PdfPart, 3),
+		Id:        id,
+		Pdfs:      make([]PdfPart, 3),
+		Honorable: false, // Not yet!
+		Winner:    false, // Not yet!
+	}
+
+	s.Finalist = false
+	for _, fid := range finalists {
+		if id == fid {
+			s.Finalist = true
+			break
+		}
 	}
 
 	i := 0
@@ -57,16 +80,14 @@ func NewSubmission(id string, path string) (*Submission, error) {
 		i++
 	}
 
-	return s, nil
-}
+	for _, pdf := range s.Pdfs {
+		if pdf.Type == "summary" && pdf.Document.Content != "" {
+			s.Summary = pdf.Document.Content
+			break
+		}
+	}
 
-var finalists = [6]string{
-	"GH-04380895",
-	"GH-1128435973",
-	"GH-121371443",
-	"GH-5059206475",
-	"GH-5631681770",
-	"GH-76091181",
+	return s, nil
 }
 
 func indexSubmissions(s *Search, dataDir string, index string) error {

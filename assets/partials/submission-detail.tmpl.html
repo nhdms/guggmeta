@@ -10,6 +10,18 @@
       </ol>
     </div>
 
+    <div class="col-xs-12" ng-if="submission.finalist">
+      <span class="selected-banner label-finalist">Finalist</span>
+    </div>
+
+    <div class="col-xs-12" ng-if="submission.honorable">
+      <span class="selected-banner label-honorable">Honorable mention</span>
+    </div>
+
+    <div class="col-xs-12" ng-if="submission.winner">
+      <span class="selected-banner label-winner">Winner</span>
+    </div>
+
   </div>
 
   <div class="row">

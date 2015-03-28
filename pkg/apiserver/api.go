@@ -18,6 +18,7 @@ func apiMuxer(ctx *apiContext) http.Handler {
 	m := web.New()
 	m.Use(middleware.SubRouter)
 	m.Use(corsMiddleware().Handler)
+	m.Use(contentType)
 
 	m.Get("/", apiIndex)
 	m.Get("/submissions/", apiHandler{ctx, apiGetSubmissions})
@@ -29,6 +30,14 @@ func apiMuxer(ctx *apiContext) http.Handler {
 
 func corsMiddleware() *cors.Cors {
 	return cors.Default()
+}
+
+func contentType(h http.Handler) http.Handler {
+	fn := func(w http.ResponseWriter, r *http.Request) {
+		w.Header().Set("Content-Type", "application/json")
+		h.ServeHTTP(w, r)
+	}
+	return http.HandlerFunc(fn)
 }
 
 func apiIndex(w http.ResponseWriter, r *http.Request) {
@@ -110,7 +119,7 @@ func apiGetSubmissions(ctx *apiContext, c web.C, w http.ResponseWriter, r *http.
 			from = (int(page) - 1) * size
 		}
 	}
-	fields := []string{"_id"}
+	fields := []string{"_id", "summary", "finalist", "winner", "honorable"}
 	var query elastic.Query
 	if q := r.URL.Query().Get("q"); q != "" {
 		query = elastic.NewMatchQuery("pdfs.content", q).Operator("or")
@@ -137,6 +146,7 @@ type ApiSearchResponse struct {
 
 type ApiSearchHit map[string]interface{}
 
+// TODO: This is a mess, fix it!
 func NewApiSearchResponse(sr *elastic.SearchResult) *ApiSearchResponse {
 	r := ApiSearchResponse{
 		Results: []ApiSearchHit{},
@@ -144,7 +154,16 @@ func NewApiSearchResponse(sr *elastic.SearchResult) *ApiSearchResponse {
 	}
 	for _, hit := range sr.Hits.Hits {
 		ah := ApiSearchHit(hit.Fields)
-		ah["highlight"] = hit.Highlight
+		if hit.Highlight != nil {
+			ah["highlight"] = hit.Highlight
+		}
+		for _, key := range []string{"summary", "finalist", "winner", "honorable"} {
+			if value, ok := hit.Fields[key]; ok {
+				if value, ok := value.([]interface{}); ok {
+					ah[key] = value[0]
+				}
+			}
+		}
 		r.Results = append(r.Results, ah)
 	}
 	return &r

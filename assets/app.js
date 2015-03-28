@@ -128,7 +128,13 @@ app.controller('SubmissionListCtrl', ['$scope', '$location', '$sce', 'response',
     for (var i = 0; i < length; i++) {
       var tuple = resp.data.results[i];
       if (angular.isDefined(tuple.highlight) && tuple.highlight !== null) {
-        tuple.highlight = $sce.trustAsHtml('[...] ' + tuple.highlight['pdfs.content'][0])
+        tuple.highlight = $sce.trustAsHtml('[...] ' + tuple.highlight['pdfs.content'][0] + ' [...]')
+      }
+      if (angular.isDefined(tuple.summary)) {
+        tuple.summary = tuple.summary.replace(/GH-\d+/g, "");
+        tuple.summary = tuple.summary.replace(/[\u00a0]+/g, " ");
+        tuple.summary = tuple.summary.replace(/press summary/gi, " ");
+        tuple.summary = $sce.trustAsHtml(tuple.summary);
       }
       $scope.submissions.push(tuple);
     }

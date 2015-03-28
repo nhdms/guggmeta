@@ -33,6 +33,10 @@ var mappings = map[string]string{
 		"submission": {
 			"dynamic": "strict",
 			"properties": {
+				"summary": { "type": "string", "store": true, "include_in_all": true },
+				"finalist": { "type": "boolean", "store": true, "include_in_all": false },
+				"winner": { "type": "boolean", "store": true, "include_in_all": false },
+				"honorable": { "type": "boolean", "store": true, "include_in_all": false },
 				"pdfs": {
 					"type": "object",
 					"properties": ` + submissionTypeProperties + `
