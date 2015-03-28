@@ -1,11 +1,9 @@
 package apiserver
 
 import (
-	"errors"
 	"fmt"
 	"net/http"
 	"strconv"
-	"strings"
 
 	"github.com/sevein/guggmeta/Godeps/_workspace/src/github.com/olivere/elastic"
 	"github.com/sevein/guggmeta/Godeps/_workspace/src/github.com/rs/cors"
@@ -24,31 +22,17 @@ func apiMuxer(ctx *apiContext) http.Handler {
 	m.Get("/", apiIndex)
 	m.Get("/submissions/", apiHandler{ctx, apiGetSubmissions})
 	m.Get("/submissions/analytics/", apiHandler{ctx, apiGetSubmissionsAnalytics})
-	m.Get("/submissions/search/", apiHandler{ctx, apiGetSubmissionsSearch})
 	m.Get("/submissions/:id/", apiHandler{ctx, apiGetSubmission})
 
 	return m
 }
 
 func corsMiddleware() *cors.Cors {
-	return cors.New(cors.Options{})
+	return cors.Default()
 }
 
 func apiIndex(w http.ResponseWriter, r *http.Request) {
 	fmt.Fprintf(w, "Hello! Looking for documentation? Not yet, sorry!\n")
-}
-
-func apiGetSubmissions(ctx *apiContext, c web.C, w http.ResponseWriter, r *http.Request) {
-	q := elastic.NewMatchAllQuery()
-	sr, err := rangedSearch(q, "guggmeta", []string{"_id"}, []string{"_id"}, ctx, w, r)
-	if err != nil {
-		w.WriteHeader(http.StatusInternalServerError)
-		ctx.Logger.Error("Unexpected error", "error", err)
-		return
-	}
-	if err := ctx.WriteJson(w, NewApiSearchResponse(sr)); err != nil {
-		w.WriteHeader(http.StatusInternalServerError)
-	}
 }
 
 func apiGetSubmission(ctx *apiContext, c web.C, w http.ResponseWriter, r *http.Request) {
@@ -118,7 +102,7 @@ func apiGetSubmissionsAnalytics(ctx *apiContext, c web.C, w http.ResponseWriter,
 	}
 }
 
-func apiGetSubmissionsSearch(ctx *apiContext, c web.C, w http.ResponseWriter, r *http.Request) {
+func apiGetSubmissions(ctx *apiContext, c web.C, w http.ResponseWriter, r *http.Request) {
 	const size = 10
 	var from int = 0
 	if p := r.URL.Query().Get("p"); p != "" {
@@ -144,95 +128,6 @@ func apiGetSubmissionsSearch(ctx *apiContext, c web.C, w http.ResponseWriter, r 
 	if err := ctx.WriteJson(w, NewApiSearchResponse(sr)); err != nil {
 		w.WriteHeader(http.StatusInternalServerError)
 	}
-}
-
-// rangedSearch deals with your content ranges as defined in:
-// https://devcenter.heroku.com/articles/platform-api-reference#ranges.
-func rangedSearch(q elastic.Query, index string, fields []string, orders []string, ctx *apiContext, w http.ResponseWriter, r *http.Request) (*elastic.SearchResult, error) {
-	const (
-		maxSize = 100
-	)
-	var (
-		from  int    = 0
-		size  int    = 20
-		order string = "asc"
-		sort  string = ""
-	)
-
-	if len(orders) == 0 {
-		return nil, errors.New("Unexpected number of orders")
-	} else {
-		sort = orders[0]
-	}
-
-	// Parse Range (e.g. Range: id 1...101; max=10,order=desc)
-	if rg := r.Header.Get("Range"); rg != "" {
-		parts := strings.Split(rg, ";")
-		length := len(parts)
-		// Parse section "id 1...101"
-		if length > 0 {
-			r := strings.Split(parts[0], " ")
-			if len(r) > 0 {
-				// TODO: check if r[0] is valid, i.e. it's in the orders list
-				sort = r[0]
-			}
-		}
-		// Parse section "max=10,order=desc"
-		if length > 1 {
-			for _, kvOption := range strings.Split(parts[1], ",") {
-				kvOptionParts := strings.Split(strings.Trim(kvOption, " "), "=")
-				if len(kvOptionParts) == 2 {
-					key := kvOptionParts[0]
-					value := kvOptionParts[1]
-					switch key {
-					case "order":
-						if value == "desc" {
-							order = value
-						}
-					case "max":
-						m, err := strconv.ParseInt(value, 10, 32)
-						if err != nil {
-							continue
-						}
-						if m < maxSize {
-							size = int(m)
-						} else {
-							size = maxSize
-						}
-					}
-				}
-			}
-		}
-	}
-
-	// We run the *SearchQuery and obtain a *SearchResult
-	sq := ctx.Search.Client.Search().Index(index).Query(q).From(from).Size(size)
-	sq.Sort(sort, order == "asc")
-
-	if len(fields) > 0 {
-		sq.Fields(fields...)
-	}
-
-	sr, err := sq.Do()
-	if err != nil {
-		return nil, err
-	}
-
-	// Retrieve header map
-	headers := w.Header()
-
-	// Show the properties that the user can use to sort the response
-	headers.Set("Accept-Ranges", strings.Join(orders, ","))
-
-	// The Content-Range entity-header is sent with a partial entity-body to
-	// specify where in the full entity-body the partial body should be applied.
-	if sr.Hits.TotalHits > maxSize {
-		headers.Set("Content-Range", fmt.Sprintf("%s %d..%d; max=%d,order=%s", sort, from, from+size, size, order))
-		headers.Set("Next-Range", fmt.Sprintf("%s %d..%d; max=%d,order=%s", sort, 1+from+size, 1+from+size*2, size, order))
-		w.WriteHeader(http.StatusPartialContent)
-	}
-
-	return sr, err
 }
 
 type ApiSearchResponse struct {

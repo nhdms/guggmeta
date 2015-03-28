@@ -182,7 +182,7 @@ app.service('SubmissionService', ['$http', function ($http) {
     return $http.get('/api/submissions/' + id + '/');
   };
   this.getAll = function () {
-    return $http.get('/api/submissions/');
+    return this.search();
   };
   this.getAnalytics = function () {
     return $http.get('/api/submissions/analytics/');
@@ -195,7 +195,7 @@ app.service('SubmissionService', ['$http', function ($http) {
     if (angular.isDefined(page)) {
       params.p = page;
     }
-    return $http.get('/api/submissions/search/', {
+    return $http.get('/api/submissions/', {
       params: params
     });
   };
