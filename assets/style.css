@@ -40,7 +40,7 @@ body.popup {
 }
 
 /**
- * Homepage top
+ * Homepage
  */
 
 .homepage-top {
@@ -66,6 +66,16 @@ body.popup {
   font-size: 18px;
   box-shadow: none;
   -webkit-box-shadow: none;
+}
+
+.container .jumbotron {
+  border-radius: 0;
+}
+
+@media (max-width: 767px) {
+  #content {
+    padding: 0 !important;
+  }
 }
 
 /**
@@ -196,8 +206,9 @@ body.popup {
 }
 
 .search-result .text {
-  font-size: 14px;
+  font-size: 13px;
   font-family: Menlo, Monaco, Consolas, "Courier New", monospace;
+  margin-left: 180px;
 }
 
 .search-result em {
@@ -528,5 +539,11 @@ body.popup {
 }
 .finalist-grid .finalist-entry a:hover img,
 .active-entry img {
-  opacity: .1;
+  opacity: .4;
+}
+
+@media (max-width: 767px) {
+  .finalists {
+    padding: 0 20px;
+  }
 }
