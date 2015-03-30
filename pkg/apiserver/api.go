@@ -2,8 +2,10 @@ package apiserver
 
 import (
 	"fmt"
+	"net"
 	"net/http"
 	"strconv"
+	"strings"
 
 	"github.com/sevein/guggmeta/Godeps/_workspace/src/github.com/garyburd/redigo/redis"
 	"github.com/sevein/guggmeta/Godeps/_workspace/src/github.com/olivere/elastic"
@@ -134,7 +136,10 @@ func apiGetSubmissions(ctx *apiContext, c web.C, w http.ResponseWriter, r *http.
 	if q := r.URL.Query().Get("q"); q != "" {
 		query = elastic.NewMatchQuery("pdfs.content", q).Operator("or")
 	} else {
-		query = elastic.NewMatchAllQuery()
+		ip := int64(ipAddrToUint32(strings.Split(r.RemoteAddr, ":")[0]))
+		query = elastic.NewFunctionScoreQuery().
+			Query(elastic.NewMatchAllQuery()).
+			AddScoreFunc(elastic.NewRandomFunction().Seed(ip))
 	}
 	hlf := elastic.NewHighlighterField("pdfs.content").NumOfFragments(1).Options(map[string]interface{}{"index_options": "offsets"})
 	hl := elastic.NewHighlight().Fields(hlf)
@@ -147,6 +152,18 @@ func apiGetSubmissions(ctx *apiContext, c web.C, w http.ResponseWriter, r *http.
 	if err := ctx.WriteJson(w, NewApiSearchResponse(sr)); err != nil {
 		w.WriteHeader(http.StatusInternalServerError)
 	}
+}
+
+func ipAddrToUint32(addr string) uint32 {
+	ip := net.ParseIP(addr)
+	if ip == nil {
+		return 0
+	}
+	ip4 := ip.To4()
+	if ip4 == nil {
+		return 0
+	}
+	return uint32(ip4[0])<<24 | uint32(ip4[1])<<16 | uint32(ip4[2])<<8 | uint32(ip4[3])
 }
 
 type ApiSearchResponse struct {
