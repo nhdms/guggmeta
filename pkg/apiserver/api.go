@@ -5,6 +5,7 @@ import (
 	"net/http"
 	"strconv"
 
+	"github.com/garyburd/redigo/redis"
 	"github.com/sevein/guggmeta/Godeps/_workspace/src/github.com/olivere/elastic"
 	"github.com/sevein/guggmeta/Godeps/_workspace/src/github.com/rs/cors"
 	"github.com/sevein/guggmeta/Godeps/_workspace/src/github.com/zenazn/goji/web"
@@ -56,6 +57,15 @@ func apiGetSubmission(ctx *apiContext, c web.C, w http.ResponseWriter, r *http.R
 		http.NotFound(w, r)
 		return
 	}
+	go func() {
+		conn := ctx.rPool.Get()
+		defer conn.Close()
+		key := fmt.Sprintf("api:count:%s", id)
+		n, err := redis.Uint64(conn.Do("INCR", key))
+		if err == nil && n%100 == 0 {
+			ctx.Logger.Info(key, "count", n)
+		}
+	}()
 	if err := ctx.WriteJson(w, resp.Source); err != nil {
 		w.WriteHeader(http.StatusInternalServerError)
 	}

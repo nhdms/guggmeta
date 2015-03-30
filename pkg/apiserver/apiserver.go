@@ -6,10 +6,12 @@ import (
 	"net/http"
 	"os"
 	"path/filepath"
+	"strconv"
 	"syscall"
 
 	"github.com/sevein/guggmeta/pkg/search"
 
+	"github.com/garyburd/redigo/redis"
 	"github.com/sevein/guggmeta/Godeps/_workspace/src/github.com/zenazn/goji/graceful"
 	"github.com/sevein/guggmeta/Godeps/_workspace/src/github.com/zenazn/goji/web"
 	"github.com/sevein/guggmeta/Godeps/_workspace/src/github.com/zenazn/goji/web/middleware"
@@ -17,16 +19,20 @@ import (
 )
 
 type apiContext struct {
-	indent bool
+	indent    bool
+	totalHits uint64
 
 	*search.Search
+	rPool *redis.Pool
 	log.Logger
 }
 
-func Start(search *search.Search, listen string, publicDir string) error {
+func Start(search *search.Search, redisPool *redis.Pool, listen string, publicDir string) error {
 	ctx := &apiContext{
-		Search: search,
-		Logger: log.New("module", "apiserver"),
+		totalHits: 0,
+		Search:    search,
+		rPool:     redisPool,
+		Logger:    log.New("module", "apiserver"),
 	}
 
 	// Clean publicDir
@@ -42,6 +48,23 @@ func Start(search *search.Search, listen string, publicDir string) error {
 	// Create muxer
 	mux := web.New()
 	mux.Use(middleware.EnvInit)
+
+	mux.Use(func(h http.Handler) http.Handler {
+		return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+			w.Header().Set("X-Guggmeta-Api-Count", strconv.FormatUint(ctx.totalHits, 10))
+			h.ServeHTTP(w, r)
+			conn := ctx.rPool.Get()
+			defer conn.Close()
+			n, err := redis.Uint64(conn.Do("INCR", "api:count:all"))
+			if err == nil {
+				ctx.totalHits = n
+				if n%100 == 0 {
+					ctx.Logger.Info("api:count:all", "count", n)
+				}
+			}
+		})
+	})
+
 	mux.Handle("/api/*", apiMuxer(ctx))
 	mux.Handle("/*", staticMuxer(ctx, publicDir))
 
