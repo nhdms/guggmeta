@@ -9,7 +9,7 @@ import (
 	"github.com/sevein/guggmeta/pkg/apiserver"
 	"github.com/sevein/guggmeta/pkg/search"
 
-	"github.com/garyburd/redigo/redis"
+	"github.com/sevein/guggmeta/Godeps/_workspace/src/github.com/garyburd/redigo/redis"
 	log "github.com/sevein/guggmeta/Godeps/_workspace/src/gopkg.in/inconshreveable/log15.v2"
 )
 

@@ -11,7 +11,7 @@ import (
 
 	"github.com/sevein/guggmeta/pkg/search"
 
-	"github.com/garyburd/redigo/redis"
+	"github.com/sevein/guggmeta/Godeps/_workspace/src/github.com/garyburd/redigo/redis"
 	"github.com/sevein/guggmeta/Godeps/_workspace/src/github.com/zenazn/goji/graceful"
 	"github.com/sevein/guggmeta/Godeps/_workspace/src/github.com/zenazn/goji/web"
 	"github.com/sevein/guggmeta/Godeps/_workspace/src/github.com/zenazn/goji/web/middleware"

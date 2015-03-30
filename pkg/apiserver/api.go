@@ -5,7 +5,7 @@ import (
 	"net/http"
 	"strconv"
 
-	"github.com/garyburd/redigo/redis"
+	"github.com/sevein/guggmeta/Godeps/_workspace/src/github.com/garyburd/redigo/redis"
 	"github.com/sevein/guggmeta/Godeps/_workspace/src/github.com/olivere/elastic"
 	"github.com/sevein/guggmeta/Godeps/_workspace/src/github.com/rs/cors"
 	"github.com/sevein/guggmeta/Godeps/_workspace/src/github.com/zenazn/goji/web"
